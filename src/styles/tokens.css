@@ -63,6 +63,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   /* 閲覧専用アプリ: テキスト選択の既定は最小限に（UI クローム） */
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -81,6 +82,8 @@ body {
   white-space: nowrap;
   direction: ltr;
   -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
   user-select: none;
 }
