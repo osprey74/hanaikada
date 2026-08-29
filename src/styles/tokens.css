@@ -1,0 +1,86 @@
+/* 花筏 デザイントークン（design_handoff/DESIGN.md「Design Tokens」準拠） */
+
+:root {
+  /* 色 — 面 */
+  --bg: #0f1012; /* 最深面（グリッド背景・ビューア台） */
+  --surface: #17181b; /* クローム面（ヘッダー・サイドバー・フッター・カード） */
+  --surface-selected: #202226; /* 選択行の面 */
+  --surface-cover: #191a1d; /* 欠損タイル / カバー面 */
+  --border: #26282d; /* 境界・区切り */
+
+  /* 色 — テキスト */
+  --text: #e6e7ea; /* 主要 */
+  --text-2: #9a9da5; /* 副次 */
+  --text-3: #6b6e76; /* 三次・アイコン */
+
+  /* 色 — アクセント（薄墨桜） */
+  --accent: #d08c9c; /* 選択・主アクション・リンク */
+  --accent-surface: #241c20; /* アクセント面 */
+  --accent-border: #3a3036; /* アクセント境界 */
+
+  /* 色 — 状態 */
+  --success: #6fa97a; /* 同期完了 */
+  --warn: #e08a4a; /* 同期中・レート制限・トークン失効 */
+  --warn-surface: #221a12; /* 警告面 */
+  --warn-border: #4a3a2a; /* 警告境界 */
+
+  /* オーバーレイ */
+  --overlay-badge: rgba(15, 16, 18, 0.72);
+  --overlay-hover: rgba(15, 16, 18, 0.78);
+  --overlay-viewer: rgba(11, 12, 13, 0.94);
+  --overlay-veil: rgba(15, 16, 18, 0.86);
+  --focus-ring: 0 0 0 2px rgba(208, 140, 156, 0.22);
+
+  /* タイポグラフィ */
+  --font-jp: "Noto Sans JP", system-ui, sans-serif;
+  --font-latin: "Inter", system-ui, sans-serif;
+  --font-ui: "Inter", "Noto Sans JP", system-ui, sans-serif;
+
+  /* 角丸 */
+  --r-badge: 3px;
+  --r-control: 4px;
+  --r-card: 6px;
+  --r-pill: 999px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* 閲覧専用アプリ: テキスト選択の既定は最小限に（UI クローム） */
+  user-select: none;
+}
+
+.tabnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}

@@ -1,0 +1,26 @@
+# dependencies
+node_modules
+dist
+dist-ssr
+
+# Rust / Tauri
+src-tauri/target
+src-tauri/gen/schemas
+
+# logs
+*.log
+npm-debug.log*
+
+# editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+Thumbs.db
+
+# env
+.env
+.env.local

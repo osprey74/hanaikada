@@ -1,0 +1,30 @@
+[package]
+name = "hanaikada"
+version = "0.1.0"
+description = "Bluesky media grid viewer (desktop, read-only)"
+authors = ["osprey74"]
+edition = "2021"
+
+[lib]
+# `_lib` サフィックスは Windows での bin 名衝突回避のため必要
+# https://github.com/rust-lang/cargo/issues/8519
+name = "hanaikada_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.32", features = ["bundled"] }
+keyring = { version = "3", features = ["apple-native", "windows-native", "sync-secret-service"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+async-trait = "0.1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }

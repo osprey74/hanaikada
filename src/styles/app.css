@@ -1,0 +1,283 @@
+/* Phase 1 の画面（ログイン / 認証後の最小シェル）用スタイル。 */
+
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- 極薄ヘッダー（design_handoff §2a ヘッダー簡略版） --- */
+.header {
+  height: 38px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.brand {
+  font-family: var(--font-jp);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+.brand-latin {
+  font-family: var(--font-latin);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+
+/* --- 中央寄せの本体 --- */
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* --- ログイン画面（design_handoff §2f） --- */
+.login {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.login-brand {
+  font-family: var(--font-jp);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+.login-lead {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-2);
+  margin-top: 6px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field-label {
+  font-size: 11px;
+  color: var(--text-2);
+}
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input {
+  width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  outline: none;
+  user-select: text;
+}
+.input::placeholder {
+  color: var(--text-3);
+}
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+.input.masked {
+  letter-spacing: 0.2em;
+}
+.input-icon-btn {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-3);
+}
+.input-icon-btn .material-symbols-rounded {
+  font-size: 16px;
+}
+
+.help {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text-3);
+}
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* エラーバナー（§2f） */
+.error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 11px;
+  border: 1px solid var(--warn-border);
+  background: var(--warn-surface);
+  border-radius: var(--r-control);
+}
+.error-banner .material-symbols-rounded {
+  font-size: 16px;
+  color: var(--warn);
+}
+.error-banner span:last-child {
+  font-size: 12px;
+  color: var(--text);
+}
+
+/* 主アクションボタン（アクセント面） */
+.btn-primary {
+  height: 32px;
+  padding: 0 16px;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-surface);
+  border-radius: var(--r-control);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 副次ボタン（枠線のみ） */
+.btn {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: var(--r-control);
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--accent-border);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.submit-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.submit-note {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* --- 認証後の最小シェル（Phase 1） --- */
+.home {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.home-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+.home-body {
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--text-2);
+}
+
+/* アカウントカード（§2h アカウント行） */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-pill);
+  background: var(--surface-selected);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--text-2);
+  flex: 0 0 auto;
+}
+.account-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.account-handle {
+  font-size: 13px;
+  color: var(--text);
+}
+.account-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spacer {
+  flex: 1;
+}
+
+.status-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.status-line.ok {
+  color: var(--success);
+}
+.status-line.warn {
+  color: var(--warn);
+}
+.status-line .material-symbols-rounded {
+  font-size: 15px;
+}
