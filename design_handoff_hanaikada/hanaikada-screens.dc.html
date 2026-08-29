@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #1E1F22; }
+  a { color: #D08C9C; text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .ms { font-family: 'Material Symbols Rounded'; font-weight: normal; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; -webkit-font-feature-settings: 'liga'; -webkit-font-smoothing: antialiased; }
+</style>
+</helmet>
+
+<section style="padding: 48px; display: flex; flex-direction: column; gap: 40px; font-family: Inter, 'Noto Sans JP', sans-serif;">
+
+  <div style="display: flex; flex-direction: column; gap: 8px; max-width: 780px;">
+    <div style="font-size: 11px; letter-spacing: 0.08em; color: #6B6E76; text-transform: uppercase;">Turn 2 · UI-BRIEF §6.1–6.6</div>
+    <div style="font-size: 22px; font-weight: 500; color: #E6E7EA;">花筏 — 画面一覧</div>
+    <div style="font-size: 13px; line-height: 1.7; color: #9A9DA5; font-family: 'Noto Sans JP', sans-serif;">1a「静水」の骨格をそのまま各画面へ展開したものです。状態画面（2c〜2e）とラベル表示（2g）は、サイドバーが 2a と同一のためメイン領域のみを描いています。タイルはアスペクト比のみ確定した無彩色プレースホルダです。</div>
+  </div>
+
+  <div id="2a" style="display: flex; flex-direction: column; gap: 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 11px; font-weight: 600; color: #0F1012; background: #D08C9C; padding: 3px 7px; border-radius: 4px;">2a</span>
+      <span style="font-size: 15px; font-weight: 500; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">メイングリッド（§6.1・確定案）</span>
+      <span style="font-size: 12px; color: #6B6E76;">1440 × 900</span>
+    </div>
+    <div data-screen-label="2a メイングリッド" style="width: 1440px; height: 900px; background: #0F1012; border: 1px solid #26282D; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; color: #E6E7EA;">
+      <div style="height: 38px; flex: none; background: #17181B; border-bottom: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px; width: 216px;">
+          <span style="font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.04em;">花筏</span>
+          <span style="font-size: 10px; letter-spacing: 0.1em; color: #6B6E76;">HANAIKADA</span>
+        </div>
+        <div style="flex: 1; display: flex; justify-content: center;">
+          <div style="width: 380px; height: 24px; background: #0F1012; border: 1px solid #26282D; border-radius: 4px; display: flex; align-items: center; gap: 6px; padding: 0 8px;">
+            <span class="ms" style="font-size: 15px; color: #6B6E76;">search</span>
+            <span style="font-size: 12px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif;">ALT・本文を検索</span>
+            <span style="margin-left: auto; font-size: 10px; color: #6B6E76; border: 1px solid #26282D; border-radius: 3px; padding: 1px 4px;">/</span>
+          </div>
+        </div>
+        <div style="width: 216px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border: 1px solid #26282D; border-radius: 4px; font-size: 12px; color: #9A9DA5;">
+            <span class="ms" style="font-size: 15px;">sync</span>
+            <span style="font-family: 'Noto Sans JP', sans-serif;">同期</span>
+          </div>
+          <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #9A9DA5;"><span class="ms" style="font-size: 17px;">settings</span></div>
+        </div>
+      </div>
+      <div style="flex: 1; display: flex; min-height: 0;">
+        <div style="width: 240px; flex: none; background: #17181B; border-right: 1px solid #26282D; display: flex; flex-direction: column; padding: 14px 0; gap: 18px; overflow: hidden;">
+          <div style="padding: 0 14px; display: flex; flex-direction: column; gap: 7px;">
+            <div style="font-size: 11px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif;">メディア種別</div>
+            <div style="display: flex; border: 1px solid #26282D; border-radius: 4px; overflow: hidden; font-size: 12px; font-family: 'Noto Sans JP', sans-serif;">
+              <div style="flex: 1; text-align: center; padding: 5px 0; background: #26282D; color: #E6E7EA;">すべて</div>
+              <div style="flex: 1; text-align: center; padding: 5px 0; color: #9A9DA5; border-left: 1px solid #26282D;">画像</div>
+              <div style="flex: 1; text-align: center; padding: 5px 0; color: #9A9DA5; border-left: 1px solid #26282D;">動画</div>
+            </div>
+          </div>
+          <div style="padding: 0 14px; display: flex; flex-direction: column; gap: 7px;">
+            <div style="font-size: 11px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif;">期間</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 5px; font-size: 12px; font-family: 'Noto Sans JP', sans-serif;">
+              <div style="padding: 4px 9px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">今日</div>
+              <div style="padding: 4px 9px; border: 1px solid #3A3036; border-radius: 4px; background: #241C20; color: #D08C9C;">7日</div>
+              <div style="padding: 4px 9px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">30日</div>
+              <div style="padding: 4px 9px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">すべて</div>
+              <div style="padding: 4px 9px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">カスタム</div>
+            </div>
+          </div>
+          <div style="padding: 0 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="font-size: 12px; color: #9A9DA5; font-family: 'Noto Sans JP', sans-serif;">リポストを含める</span>
+            <div style="width: 30px; height: 17px; border-radius: 999px; background: #3A3036; display: flex; align-items: center; padding: 2px; justify-content: flex-end;">
+              <div style="width: 13px; height: 13px; border-radius: 999px; background: #D08C9C;"></div>
+            </div>
+          </div>
+          <div style="border-top: 1px solid #26282D; padding-top: 14px; display: flex; flex-direction: column; gap: 8px; min-height: 0;">
+            <div style="padding: 0 14px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 11px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif;">投稿者</span>
+              <span style="font-size: 11px; color: #6B6E76; font-variant-numeric: tabular-nums;">3 / 218</span>
+            </div>
+            <div style="margin: 0 14px; height: 24px; background: #0F1012; border: 1px solid #26282D; border-radius: 4px; display: flex; align-items: center; gap: 6px; padding: 0 8px;">
+              <span class="ms" style="font-size: 14px; color: #6B6E76;">search</span>
+              <span style="font-size: 12px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif;">ハンドルで絞り込む</span>
+            </div>
+            <div style="display: flex; flex-direction: column; overflow: hidden;">
+              <sc-for list="{{ actors }}" as="a" hint-placeholder-count="10">
+                <div style="display: flex; align-items: center; gap: 9px; padding: 6px 14px; background: {{ a.rowBg }};">
+                  <div style="width: 22px; height: 22px; border-radius: 999px; flex: none; background: {{ a.color }}; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #0F1012;">{{ a.initial }}</div>
+                  <span style="font-size: 12px; color: {{ a.fg }}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ a.handle }}</span>
+                  <span style="margin-left: auto; font-size: 11px; color: #6B6E76; font-variant-numeric: tabular-nums;">{{ a.count }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 0; overflow: hidden; padding: 10px 12px 0 12px; display: flex; gap: 8px; align-items: flex-start;">
+          <sc-for list="{{ colsMain }}" as="col" hint-placeholder-count="5">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+              <sc-for list="{{ col.tiles }}" as="t" hint-placeholder-count="5">
+                <div style="position: relative; border-radius: 6px; overflow: hidden; box-shadow: {{ t.ring }};" onMouseEnter="{{ t.enter }}" onMouseLeave="{{ t.leave }}">
+                  <div style="width: 100%; aspect-ratio: {{ t.ar }}; background: {{ t.color }};"></div>
+                  <div style="position: absolute; top: 6px; right: 6px; display: flex; gap: 4px;">
+                    <sc-if value="{{ t.multi }}" hint-placeholder-val="{{ false }}">
+                      <div style="background: rgba(15,16,18,0.72); color: #E6E7EA; font-size: 10px; padding: 2px 5px; border-radius: 3px; font-variant-numeric: tabular-nums;">{{ t.count }}</div>
+                    </sc-if>
+                    <sc-if value="{{ t.video }}" hint-placeholder-val="{{ false }}">
+                      <div style="background: rgba(15,16,18,0.72); color: #E6E7EA; width: 18px; height: 18px; border-radius: 3px; display: flex; align-items: center; justify-content: center;"><span class="ms" style="font-size: 14px;">play_arrow</span></div>
+                    </sc-if>
+                  </div>
+                  <sc-if value="{{ t.repost }}" hint-placeholder-val="{{ false }}">
+                    <div style="position: absolute; top: 6px; left: 6px; color: #9A9DA5;"><span class="ms" style="font-size: 15px;">repeat</span></div>
+                  </sc-if>
+                  <div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: rgba(15,16,18,0.78); opacity: {{ t.band }}; transition: opacity 140ms ease-out;">
+                    <span style="font-size: 11px; color: #E6E7EA; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.handle }}</span>
+                    <span style="margin-left: auto; font-size: 11px; color: #9A9DA5; font-variant-numeric: tabular-nums; flex: none;">{{ t.time }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="height: 24px; flex: none; background: #17181B; border-top: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 18px; font-size: 11px; color: #6B6E76;">
+        <span style="display: flex; align-items: center; gap: 5px;"><span class="ms" style="font-size: 13px; color: #6FA97A;">check_circle</span><span style="font-family: 'Noto Sans JP', sans-serif;">最終同期 3分前</span></span>
+        <span style="font-variant-numeric: tabular-nums; font-family: 'Noto Sans JP', sans-serif;">12,480 件中 1,204 件を表示</span>
+        <span style="margin-left: auto; font-variant-numeric: tabular-nums; font-family: 'Noto Sans JP', sans-serif;">キャッシュ 1.24 / 2.00 GB</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="2b" style="display: flex; flex-direction: column; gap: 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 11px; font-weight: 600; color: #0F1012; background: #D08C9C; padding: 3px 7px; border-radius: 4px;">2b</span>
+      <span style="font-size: 15px; font-weight: 500; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">ライトボックスビューア（§6.2）</span>
+      <span style="font-size: 12px; color: #6B6E76;">UI は 2 秒で淡くフェード / マウス移動で復帰</span>
+    </div>
+    <div data-screen-label="2b ビューア" style="width: 1440px; height: 900px; background: #0F1012; border: 1px solid #26282D; border-radius: 6px; overflow: hidden; position: relative; color: #E6E7EA;">
+      <div style="position: absolute; inset: 0; padding: 10px; display: flex; gap: 8px; align-items: flex-start; opacity: 0.5;">
+        <sc-for list="{{ colsBackdrop }}" as="col" hint-placeholder-count="6">
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+            <sc-for list="{{ col.tiles }}" as="t" hint-placeholder-count="5">
+              <div style="width: 100%; aspect-ratio: {{ t.ar }}; background: {{ t.color }}; border-radius: 6px;"></div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="position: absolute; inset: 0; background: rgba(11,12,13,0.94); display: flex; flex-direction: column;">
+        <div style="height: 46px; flex: none; display: flex; align-items: center; padding: 0 16px; gap: 8px;">
+          <span style="font-size: 12px; color: #9A9DA5; font-variant-numeric: tabular-nums;">2 / 4</span>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; font-family: 'Noto Sans JP', sans-serif;">
+            <div style="display: flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;"><span class="ms" style="font-size: 15px;">open_in_new</span><span>元投稿を開く</span><span style="font-size: 10px; color: #6B6E76; border: 1px solid #26282D; border-radius: 3px; padding: 1px 4px;">O</span></div>
+            <div style="display: flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;"><span class="ms" style="font-size: 15px;">download</span><span>保存</span></div>
+            <div style="display: flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;"><span class="ms" style="font-size: 15px;">close</span><span>閉じる</span><span style="font-size: 10px; color: #6B6E76; border: 1px solid #26282D; border-radius: 3px; padding: 1px 4px;">Esc</span></div>
+          </div>
+        </div>
+        <div style="flex: 1; min-height: 0; display: flex; align-items: center; gap: 20px; padding: 0 20px;">
+          <div style="width: 40px; height: 40px; flex: none; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #9A9DA5; background: rgba(38,40,45,0.6);"><span class="ms" style="font-size: 22px;">chevron_left</span></div>
+          <div style="flex: 1; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <div style="height: 92%; aspect-ratio: 4 / 5; background: #3A3F49; border-radius: 4px;"></div>
+          </div>
+          <div style="width: 40px; height: 40px; flex: none; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #9A9DA5; background: rgba(38,40,45,0.6);"><span class="ms" style="font-size: 22px;">chevron_right</span></div>
+        </div>
+        <div style="flex: none; padding: 14px 80px 20px 80px; display: flex; flex-direction: column; gap: 8px; max-width: 900px; margin: 0 auto; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 9px;">
+            <div style="width: 24px; height: 24px; border-radius: 999px; background: #453A41; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #0F1012;">M</div>
+            <span style="font-size: 13px; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">水城 みずき</span>
+            <span style="font-size: 12px; color: #6B6E76;">@mizuki.bsky.social</span>
+            <span style="margin-left: auto; font-size: 12px; color: #6B6E76; font-variant-numeric: tabular-nums;">2026/08/29 22:14</span>
+          </div>
+          <div style="font-size: 13px; line-height: 1.7; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">昨夜の展示、閉館前の最後の一枚。硝子越しの光がちょうどよく落ちていました。</div>
+          <div style="display: flex; gap: 8px; padding-top: 4px; border-top: 1px solid #26282D; margin-top: 4px;">
+            <span style="flex: none; font-size: 11px; color: #6B6E76; padding-top: 5px;">ALT</span>
+            <span style="font-size: 12px; line-height: 1.7; color: #9A9DA5; padding-top: 3px; font-family: 'Noto Sans JP', sans-serif;">薄暗い展示室。硝子ケースの中に置かれた青い器に、天窓からの光が斜めに差している。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
+
+    <div id="2c" style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: baseline; gap: 12px;">
+        <span style="font-size: 11px; font-weight: 600; color: #0F1012; background: #D08C9C; padding: 3px 7px; border-radius: 4px;">2c</span>
+        <span style="font-size: 15px; font-weight: 500; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">初回起動の空グリッド（§6.3）</span>
+      </div>
+      <div data-screen-label="2c 空状態" style="width: 980px; height: 600px; background: #0F1012; border: 1px solid #26282D; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; color: #E6E7EA;">
+        <div style="height: 38px; flex: none; background: #17181B; border-bottom: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 10px;">
+          <span style="font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.04em;">花筏</span>
+          <span style="font-size: 10px; letter-spacing: 0.1em; color: #6B6E76;">HANAIKADA</span>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border: 1px solid #26282D; border-radius: 4px; font-size: 12px; color: #6B6E76;">
+            <span class="ms" style="font-size: 15px;">sync</span><span style="font-family: 'Noto Sans JP', sans-serif;">同期</span>
+          </div>
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 40px;">
+          <div style="max-width: 460px; display: flex; flex-direction: column; gap: 16px; font-family: 'Noto Sans JP', sans-serif;">
+            <div style="font-size: 15px; font-weight: 500; color: #E6E7EA;">まだ何も溜まっていません</div>
+            <div style="font-size: 13px; line-height: 1.9; color: #9A9DA5;">フォロー中のアカウントが投稿・リポストした画像と動画を、これから 30 日分さかのぼって取り込みます。以降は 5 分ごとに新着だけを確認します。</div>
+            <div style="display: flex; flex-direction: column; gap: 7px; font-size: 12px; color: #6B6E76; line-height: 1.7;">
+              <div style="display: flex; gap: 8px;"><span class="ms" style="font-size: 15px; margin-top: 1px;">download</span><span>取り込みは端末内で完結します。投稿・いいねは行いません。</span></div>
+              <div style="display: flex; gap: 8px;"><span class="ms" style="font-size: 15px; margin-top: 1px;">schedule</span><span>初回は数分かかります。途中で中断できます。</span></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+              <div style="display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 14px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; font-size: 13px; color: #D08C9C;"><span class="ms" style="font-size: 16px;">play_arrow</span><span>初回同期をはじめる</span></div>
+              <span style="font-size: 12px; color: #6B6E76;">遡る期間は設定で変更できます</span>
+            </div>
+          </div>
+        </div>
+        <div style="height: 24px; flex: none; background: #17181B; border-top: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 18px; font-size: 11px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif;">
+          <span>未同期</span><span style="font-variant-numeric: tabular-nums;">0 件</span>
+          <span style="margin-left: auto; font-variant-numeric: tabular-nums;">キャッシュ 0.00 / 2.00 GB</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="2d" style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: baseline; gap: 12px;">
+        <span style="font-size: 11px; font-weight: 600; color: #0F1012; background: #D08C9C; padding: 3px 7px; border-radius: 4px;">2d</span>
+        <span style="font-size: 15px; font-weight: 500; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">初回同期の進捗（§6.3）</span>
+      </div>
+      <div data-screen-label="2d 同期中" style="width: 980px; height: 600px; background: #0F1012; border: 1px solid #26282D; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; color: #E6E7EA;">
+        <div style="height: 38px; flex: none; background: #17181B; border-bottom: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 10px;">
+          <span style="font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.04em;">花筏</span>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #E08A4A; font-family: 'Noto Sans JP', sans-serif;"><span class="ms" style="font-size: 15px;">sync</span><span>同期中</span></div>
+        </div>
+        <div style="flex: 1; min-height: 0; position: relative; overflow: hidden;">
+          <div style="position: absolute; inset: 0; padding: 10px; display: flex; gap: 8px; align-items: flex-start; opacity: 0.45;">
+            <sc-for list="{{ colsBackdrop }}" as="col" hint-placeholder-count="4">
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+                <sc-for list="{{ col.tiles }}" as="t" hint-placeholder-count="4">
+                  <div style="width: 100%; aspect-ratio: {{ t.ar }}; background: {{ t.color }}; border-radius: 6px;"></div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+          <div style="position: absolute; inset: 0; background: rgba(15,16,18,0.86); display: flex; align-items: center; justify-content: center;">
+            <div style="width: 420px; background: #17181B; border: 1px solid #26282D; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 14px; font-family: 'Noto Sans JP', sans-serif;">
+              <div style="font-size: 15px; font-weight: 500; color: #E6E7EA;">初回同期中</div>
+              <div style="display: flex; flex-direction: column; gap: 7px;">
+                <div style="height: 3px; background: #26282D; border-radius: 999px; overflow: hidden;"><div style="width: 46%; height: 100%; background: #9A9DA5;"></div></div>
+                <div style="display: flex; align-items: baseline; justify-content: space-between; font-size: 12px; color: #9A9DA5;">
+                  <span style="font-variant-numeric: tabular-nums;">14 / 30 ページ</span>
+                  <span style="font-variant-numeric: tabular-nums; color: #6B6E76;">2026/08/16 まで遡りました</span>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #9A9DA5; font-variant-numeric: tabular-nums;">
+                <div style="display: flex; justify-content: space-between;"><span>取得したメディア</span><span style="color: #E6E7EA;">3,182 件</span></div>
+                <div style="display: flex; justify-content: space-between;"><span>投稿者</span><span style="color: #E6E7EA;">196 アカウント</span></div>
+                <div style="display: flex; justify-content: space-between;"><span>経過</span><span style="color: #E6E7EA;">1 分 42 秒</span></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6B6E76; line-height: 1.7; border-top: 1px solid #26282D; padding-top: 12px;">
+                <span class="ms" style="font-size: 15px; color: #E08A4A;">schedule</span>
+                <span>レート制限を受けたため 12 秒待機しています。中断しても取得済みの分は残ります。</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <div style="height: 28px; padding: 0 12px; border: 1px solid #26282D; border-radius: 4px; display: flex; align-items: center; font-size: 12px; color: #9A9DA5;">中断する</div>
+                <div style="height: 28px; padding: 0 12px; border: 1px solid #26282D; border-radius: 4px; display: flex; align-items: center; font-size: 12px; color: #9A9DA5;">バックグラウンドで続ける</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="height: 24px; flex: none; background: #17181B; border-top: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 18px; font-size: 11px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif;">
+          <span style="display: flex; align-items: center; gap: 5px;"><span class="ms" style="font-size: 13px; color: #E08A4A;">sync</span>同期中 14 / 30 ページ</span>
+          <span style="font-variant-numeric: tabular-nums;">3,182 件</span>
+          <span style="margin-left: auto; font-variant-numeric: tabular-nums;">キャッシュ 0.42 / 2.00 GB</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="2e" style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: baseline; gap: 12px;">
+        <span style="font-size: 11px; font-weight: 600; color: #0F1012; background: #D08C9C; padding: 3px 7px; border-radius: 4px;">2e</span>
+        <span style="font-size: 15px; font-weight: 500; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">フィルタ結果 0 件（§6.3）</span>
+      </div>
+      <div data-screen-label="2e 0件" style="width: 980px; height: 420px; background: #0F1012; border: 1px solid #26282D; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; color: #E6E7EA;">
+        <div style="height: 38px; flex: none; background: #17181B; border-bottom: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 10px;">
+          <span style="font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; letter-spacing: 0.04em;">花筏</span>
+          <div style="width: 300px; height: 24px; margin-left: 12px; background: #0F1012; border: 1px solid #3A3036; border-radius: 4px; display: flex; align-items: center; gap: 6px; padding: 0 8px;">
+            <span class="ms" style="font-size: 15px; color: #6B6E76;">search</span>
+            <span style="font-size: 12px; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">硝子</span>
+            <span class="ms" style="margin-left: auto; font-size: 14px; color: #6B6E76;">close</span>
+          </div>
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+          <div style="max-width: 440px; display: flex; flex-direction: column; gap: 14px; font-family: 'Noto Sans JP', sans-serif; align-items: flex-start;">
+            <div style="font-size: 15px; font-weight: 500; color: #E6E7EA;">条件に合うメディアがありません</div>
+            <div style="font-size: 13px; line-height: 1.8; color: #9A9DA5;">「動画のみ」「直近 7 日」「投稿者 3 件」「ALT に “硝子”」で絞り込んでいます。条件をひとつ外すと 42 件が該当します。</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px;">
+              <div style="display: flex; align-items: center; gap: 5px; padding: 4px 9px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; color: #D08C9C;"><span>動画のみ</span><span class="ms" style="font-size: 13px;">close</span></div>
+              <div style="display: flex; align-items: center; gap: 5px; padding: 4px 9px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; color: #D08C9C;"><span>7日</span><span class="ms" style="font-size: 13px;">close</span></div>
+              <div style="display: flex; align-items: center; gap: 5px; padding: 4px 9px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; color: #D08C9C;"><span>投稿者 3</span><span class="ms" style="font-size: 13px;">close</span></div>
+              <div style="display: flex; align-items: center; gap: 5px; padding: 4px 9px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;"><span>すべての条件を解除</span><span style="font-size: 10px; color: #6B6E76; border: 1px solid #26282D; border-radius: 3px; padding: 1px 4px;">Esc</span></div>
+            </div>
+          </div>
+        </div>
+        <div style="height: 24px; flex: none; background: #17181B; border-top: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 18px; font-size: 11px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif;">
+          <span style="display: flex; align-items: center; gap: 5px;"><span class="ms" style="font-size: 13px; color: #6FA97A;">check_circle</span>最終同期 3分前</span>
+          <span style="font-variant-numeric: tabular-nums;">12,480 件中 0 件を表示</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="2f" style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: baseline; gap: 12px;">
+        <span style="font-size: 11px; font-weight: 600; color: #0F1012; background: #D08C9C; padding: 3px 7px; border-radius: 4px;">2f</span>
+        <span style="font-size: 15px; font-weight: 500; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">ログイン（§6.4）</span>
+        <span style="font-size: 12px; color: #6B6E76;">認証失敗の表示を含む</span>
+      </div>
+      <div data-screen-label="2f ログイン" style="width: 720px; height: 560px; background: #0F1012; border: 1px solid #26282D; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; color: #E6E7EA;">
+        <div style="height: 32px; flex: none; background: #17181B; border-bottom: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px;">
+          <span style="font-size: 11px; color: #6B6E76; letter-spacing: 0.1em;">HANAIKADA</span>
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 60px;">
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 18px; font-family: 'Noto Sans JP', sans-serif;">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="font-size: 20px; font-weight: 500; letter-spacing: 0.04em;">花筏</div>
+              <div style="font-size: 12px; color: #9A9DA5; line-height: 1.7;">Bluesky のアカウントでログインします。取得したメディアは端末内にのみ保存されます。</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 9px 11px; border: 1px solid #4A3A2A; background: #221A12; border-radius: 4px;">
+              <span class="ms" style="font-size: 16px; color: #E08A4A; flex: none;">error</span>
+              <span style="font-size: 12px; color: #E6E7EA; line-height: 1.6;">認証に失敗しました。handle と App Password をご確認ください。</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <span style="font-size: 11px; color: #9A9DA5;">handle</span>
+              <div style="height: 32px; background: #17181B; border: 1px solid #26282D; border-radius: 4px; display: flex; align-items: center; padding: 0 10px; font-size: 13px; color: #E6E7EA;">osprey74.bsky.social</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <span style="font-size: 11px; color: #9A9DA5;">App Password</span>
+              <div style="height: 32px; background: #17181B; border: 1px solid #D08C9C; border-radius: 4px; display: flex; align-items: center; padding: 0 10px; gap: 8px; font-size: 13px; color: #E6E7EA; box-shadow: 0 0 0 2px rgba(208,140,156,0.22);">
+                <span style="letter-spacing: 0.2em; color: #9A9DA5;">••••-••••-••••-••••</span>
+                <span class="ms" style="margin-left: auto; font-size: 16px; color: #6B6E76;">visibility</span>
+              </div>
+              <div style="font-size: 11px; color: #6B6E76; line-height: 1.7;">アカウント本体のパスワードは使えません。Bluesky の Settings → Privacy and Security → App Passwords で発行した App Password をご利用ください。<a href="#2f" style="color: #D08C9C;">発行手順を開く</a></div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="height: 32px; padding: 0 16px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; display: flex; align-items: center; font-size: 13px; color: #D08C9C;">ログイン</div>
+              <span style="font-size: 11px; color: #6B6E76; line-height: 1.6;">App Password は保存せず、更新用トークンのみを OS キーチェーンに預けます。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="2g" style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: baseline; gap: 12px;">
+        <span style="font-size: 11px; font-weight: 600; color: #0F1012; background: #D08C9C; padding: 3px 7px; border-radius: 4px;">2g</span>
+        <span style="font-size: 15px; font-weight: 500; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">ラベル付きメディアの混在表示（§6.6）</span>
+        <span style="font-size: 12px; color: #6B6E76;">メイン領域のみ</span>
+      </div>
+      <div data-screen-label="2g ラベル付き" style="width: 980px; height: 700px; background: #0F1012; border: 1px solid #26282D; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; color: #E6E7EA;">
+        <div style="height: 32px; flex: none; background: #17181B; border-bottom: 1px solid #26282D; display: flex; align-items: center; padding: 0 12px; gap: 10px; font-size: 12px; font-family: 'Noto Sans JP', sans-serif;">
+          <span style="color: #9A9DA5;">ラベル付き 18 件を含む</span>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 6px; color: #9A9DA5;">
+            <div style="display: flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border: 1px solid #26282D; border-radius: 4px;"><span class="ms" style="font-size: 15px;">visibility</span><span>この画面ではブラーを解除</span></div>
+          </div>
+        </div>
+        <div style="flex: 1; min-height: 0; overflow: hidden; padding: 10px 12px 0 12px; display: flex; gap: 8px; align-items: flex-start;">
+          <sc-for list="{{ colsLabeled }}" as="col" hint-placeholder-count="4">
+            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+              <sc-for list="{{ col.tiles }}" as="t" hint-placeholder-count="4">
+                <div style="position: relative; border-radius: 6px; overflow: hidden;" onMouseEnter="{{ t.enter }}" onMouseLeave="{{ t.leave }}">
+                  <div style="width: 100%; aspect-ratio: {{ t.ar }}; background: {{ t.color }};"></div>
+                  <sc-if value="{{ t.multi }}" hint-placeholder-val="{{ false }}">
+                    <div style="position: absolute; top: 6px; right: 6px; background: rgba(15,16,18,0.72); color: #E6E7EA; font-size: 10px; padding: 2px 5px; border-radius: 3px; font-variant-numeric: tabular-nums;">{{ t.count }}</div>
+                  </sc-if>
+                  <div style="position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: rgba(15,16,18,0.78); opacity: {{ t.band }}; transition: opacity 140ms ease-out;">
+                    <span style="font-size: 11px; color: #E6E7EA; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ t.handle }}</span>
+                    <span style="margin-left: auto; font-size: 11px; color: #9A9DA5; font-variant-numeric: tabular-nums; flex: none;">{{ t.time }}</span>
+                  </div>
+                  <sc-if value="{{ t.labeled }}" hint-placeholder-val="{{ false }}">
+                    <div style="position: absolute; inset: 0; background: #191A1D; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 10px; text-align: center;">
+                      <span class="ms" style="font-size: 18px; color: #6B6E76;">visibility_off</span>
+                      <span style="font-size: 11px; color: #9A9DA5; font-family: 'Noto Sans JP', sans-serif; line-height: 1.6;">{{ t.labelName }}</span>
+                      <span style="font-size: 11px; color: #6B6E76; font-family: 'Noto Sans JP', sans-serif; border: 1px solid #26282D; border-radius: 4px; padding: 2px 8px;">クリックで表示</span>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div id="2h" style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: baseline; gap: 12px;">
+        <span style="font-size: 11px; font-weight: 600; color: #0F1012; background: #D08C9C; padding: 3px 7px; border-radius: 4px;">2h</span>
+        <span style="font-size: 15px; font-weight: 500; color: #E6E7EA; font-family: 'Noto Sans JP', sans-serif;">設定（§6.5）</span>
+      </div>
+      <div data-screen-label="2h 設定" style="width: 980px; height: 700px; background: #0F1012; border: 1px solid #26282D; border-radius: 6px; overflow: hidden; display: flex; color: #E6E7EA;">
+        <div style="width: 200px; flex: none; background: #17181B; border-right: 1px solid #26282D; padding: 14px 0; display: flex; flex-direction: column; gap: 2px; font-size: 12px; font-family: 'Noto Sans JP', sans-serif;">
+          <div style="padding: 0 14px 10px 14px; font-size: 11px; color: #6B6E76;">設定</div>
+          <div style="display: flex; align-items: center; gap: 9px; padding: 7px 14px; background: #202226; color: #E6E7EA;"><span class="ms" style="font-size: 16px;">person</span><span>アカウント</span></div>
+          <div style="display: flex; align-items: center; gap: 9px; padding: 7px 14px; color: #9A9DA5;"><span class="ms" style="font-size: 16px;">sync</span><span>同期</span></div>
+          <div style="display: flex; align-items: center; gap: 9px; padding: 7px 14px; color: #9A9DA5;"><span class="ms" style="font-size: 16px;">grid_view</span><span>表示</span></div>
+          <div style="display: flex; align-items: center; gap: 9px; padding: 7px 14px; color: #9A9DA5;"><span class="ms" style="font-size: 16px;">visibility_off</span><span>モデレーション</span></div>
+          <div style="display: flex; align-items: center; gap: 9px; padding: 7px 14px; color: #9A9DA5;"><span class="ms" style="font-size: 16px;">database</span><span>キャッシュ</span></div>
+        </div>
+        <div style="flex: 1; min-width: 0; overflow: hidden; padding: 20px 24px; display: flex; flex-direction: column; gap: 22px; font-family: 'Noto Sans JP', sans-serif;">
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="font-size: 13px; font-weight: 500; color: #E6E7EA;">アカウント</div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #17181B; border: 1px solid #26282D; border-radius: 6px;">
+              <div style="width: 30px; height: 30px; border-radius: 999px; background: #3A3F49; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #0F1012;">O</div>
+              <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span style="font-size: 13px; color: #E6E7EA;">@osprey74.bsky.social</span>
+                <span style="font-size: 11px; color: #6B6E76; font-variant-numeric: tabular-nums;">did:plc:5x2f… / 最終認証 2026/08/29 21:58</span>
+              </div>
+              <div style="margin-left: auto; height: 26px; padding: 0 11px; border: 1px solid #26282D; border-radius: 4px; display: flex; align-items: center; font-size: 12px; color: #9A9DA5;">ログアウト</div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="font-size: 13px; font-weight: 500; color: #E6E7EA;">同期</div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 12px; color: #9A9DA5; width: 150px;">ポーリング間隔</span>
+              <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                <div style="flex: 1; height: 3px; background: #26282D; border-radius: 999px; position: relative;"><div style="width: 16%; height: 100%; background: #6B6E76; border-radius: 999px;"></div><div style="position: absolute; left: 16%; top: -4px; width: 11px; height: 11px; border-radius: 999px; background: #D08C9C;"></div></div>
+                <span style="font-size: 12px; color: #E6E7EA; font-variant-numeric: tabular-nums; width: 52px; text-align: right;">5 分</span>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 12px; color: #9A9DA5; width: 150px;">初回に遡る期間</span>
+              <div style="display: flex; gap: 5px; font-size: 12px;">
+                <div style="padding: 4px 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">7 日</div>
+                <div style="padding: 4px 10px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; color: #D08C9C;">30 日</div>
+                <div style="padding: 4px 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">90 日</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 12px; color: #9A9DA5; width: 150px;">外部リンクのサムネ</span>
+              <div style="width: 30px; height: 17px; border-radius: 999px; background: #26282D; display: flex; align-items: center; padding: 2px;"><div style="width: 13px; height: 13px; border-radius: 999px; background: #6B6E76;"></div></div>
+              <span style="font-size: 11px; color: #6B6E76;">OGP 画像も取り込みます（既定は取り込みません）</span>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="font-size: 13px; font-weight: 500; color: #E6E7EA;">表示</div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 12px; color: #9A9DA5; width: 150px;">テーマ</span>
+              <div style="display: flex; gap: 5px; font-size: 12px;">
+                <div style="padding: 4px 10px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; color: #D08C9C;">ダーク</div>
+                <div style="padding: 4px 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">ライト</div>
+                <div style="padding: 4px 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">OS に合わせる</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 12px; color: #9A9DA5; width: 150px;">タイル密度</span>
+              <div style="display: flex; gap: 5px; font-size: 12px;">
+                <div style="padding: 4px 10px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; color: #D08C9C;">ゆったり 8px</div>
+                <div style="padding: 4px 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">詰める 4px</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <span style="font-size: 12px; color: #9A9DA5; width: 150px;">複数枚投稿</span>
+              <div style="display: flex; gap: 5px; font-size: 12px;">
+                <div style="padding: 4px 10px; border: 1px solid #3A3036; background: #241C20; border-radius: 4px; color: #D08C9C;">1 タイルにまとめる</div>
+                <div style="padding: 4px 10px; border: 1px solid #26282D; border-radius: 4px; color: #9A9DA5;">ばらして並べる</div>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="font-size: 13px; font-weight: 500; color: #E6E7EA;">キャッシュ</div>
+            <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #17181B; border: 1px solid #26282D; border-radius: 6px;">
+              <div style="display: flex; align-items: baseline; justify-content: space-between; font-size: 12px;">
+                <span style="color: #9A9DA5;">使用量</span>
+                <span style="color: #E6E7EA; font-variant-numeric: tabular-nums;">1.24 GB / 上限 2.00 GB</span>
+              </div>
+              <div style="height: 4px; background: #26282D; border-radius: 999px; overflow: hidden;"><div style="width: 62%; height: 100%; background: #6B6E76;"></div></div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 11px; color: #6B6E76; line-height: 1.6;">上限を超えた分は最後に開いた順に削除します。投稿情報は残ります。</span>
+                <div style="margin-left: auto; flex: none; height: 26px; padding: 0 11px; border: 1px solid #26282D; border-radius: 4px; display: flex; align-items: center; font-size: 12px; color: #9A9DA5;">キャッシュを削除</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#D08C9C&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#D08C9C&quot;,&quot;#8FA9C0&quot;,&quot;#A8A48C&quot;,&quot;#7FA091&quot;],&quot;section&quot;:&quot;トークン&quot;},&quot;forceMeta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;表示&quot;}}">
+const AR = ['3 / 4', '4 / 3', '1 / 1', '2 / 3', '16 / 9', '4 / 5', '3 / 2', '1 / 1', '4 / 3', '5 / 4', '9 / 16'];
+const COLORS = ['#3A3F49', '#45403A', '#2F3B3B', '#453A41', '#363E4B', '#4A453C', '#2C3438', '#413B44', '#39443E', '#4B4340', '#334049', '#3F3A33'];
+const HANDLES = ['mizuki.bsky.social', 'kagerou.bsky.social', 'shirasu.bsky.social', 'aoi-ph.bsky.social', 'tsuyu.bsky.social', 'nagi.bsky.social', 'hoshimi.bsky.social', 'kumo.bsky.social', 'sanae-art.bsky.social', 'yoi.bsky.social'];
+const TIMES = ['2分', '14分', '38分', '1時間', '3時間', '5時間', '昨日', '2日'];
+const LABELS = ['成人向け（porn）', '性的表現（sexual）', '露出（nudity）', '衝撃的な映像（graphic-media）'];
+
+function seeded(seed) {
+  let s = seed >>> 0;
+  return function () {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+
+class Component extends DCLogic {
+  state = { hover: null };
+
+  build(prefix, n, seed, opts) {
+    const o = opts || {};
+    const r = seeded(seed);
+    const accent = this.props.accent ?? '#D08C9C';
+    const forceMeta = this.props.forceMeta ?? false;
+    const labelRate = o.labelRate ?? 0;
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const key = prefix + i;
+      const video = r() < 0.09;
+      const count = 2 + Math.floor(r() * 3);
+      const multi = !video && r() < 0.28;
+      out.push({
+        key,
+        ar: AR[Math.floor(r() * AR.length)],
+        color: COLORS[Math.floor(r() * COLORS.length)],
+        handle: '@' + HANDLES[Math.floor(r() * HANDLES.length)],
+        time: TIMES[Math.floor(r() * TIMES.length)],
+        video, multi, count,
+        repost: r() < 0.18,
+        labeled: r() < labelRate,
+        labelName: LABELS[Math.floor(r() * LABELS.length)],
+        ring: i === o.selected ? 'inset 0 0 0 2px ' + accent : 'none',
+        band: (forceMeta || this.state.hover === key || i === o.band) ? 1 : 0,
+        enter: () => this.setState({ hover: key }),
+        leave: () => this.setState(s => (s.hover === key ? { hover: null } : null)),
+      });
+    }
+    return out;
+  }
+
+  split(tiles, n) {
+    const cols = [];
+    for (let i = 0; i < n; i++) cols.push({ tiles: [] });
+    tiles.forEach((t, i) => cols[i % n].tiles.push(t));
+    return cols;
+  }
+
+  renderVals() {
+    const r = seeded(7);
+    const actors = HANDLES.map((h, i) => {
+      const on = i < 3;
+      return {
+        handle: '@' + h,
+        initial: h.charAt(0).toUpperCase(),
+        color: COLORS[(i * 3) % COLORS.length],
+        count: String(30 + Math.floor(r() * 400)),
+        rowBg: on ? '#202226' : 'transparent',
+        fg: on ? '#E6E7EA' : '#9A9DA5',
+      };
+    });
+    return {
+      actors,
+      colsMain: this.split(this.build('a', 30, 11, { selected: 6, band: 9 }), 5),
+      colsBackdrop: this.split(this.build('bd', 30, 31, {}), 6),
+      colsLabeled: this.split(this.build('lb', 28, 61, { labelRate: 0.3, band: 4 }), 4),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
