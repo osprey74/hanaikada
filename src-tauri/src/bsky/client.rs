@@ -141,6 +141,28 @@ impl BskyClient {
         Err(self.map_error(status, resp.text().await.unwrap_or_default()))
     }
 
+    /// `app.bsky.actor.getPreferences`。モデレーション設定（アダルト設定・ラベル可視性）の取得に使う。
+    /// レスポンスの `preferences` 配列を含む JSON をそのまま返し、解釈は呼び出し側で行う。
+    pub async fn get_preferences(&self, access_jwt: &str) -> Result<serde_json::Value> {
+        let resp = self
+            .http
+            .get(self.url("app.bsky.actor.getPreferences"))
+            .bearer_auth(access_jwt)
+            .send()
+            .await?;
+
+        let status = resp.status();
+        if status == StatusCode::TOO_MANY_REQUESTS {
+            return Err(AppError::RateLimited {
+                retry_after_secs: retry_after(resp.headers()),
+            });
+        }
+        if status.is_success() {
+            return Ok(resp.json::<serde_json::Value>().await?);
+        }
+        Err(self.map_error(status, resp.text().await.unwrap_or_default()))
+    }
+
     /// session 系レスポンスの共通パース。
     async fn parse_session(
         &self,

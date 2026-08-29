@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ActorSummary, MediaTile, SessionInfo, SyncStatus } from "../lib/types";
+import type {
+  ActorSummary,
+  MediaTile,
+  ModerationPrefs,
+  SessionInfo,
+  SyncStatus,
+} from "../lib/types";
 import {
+  getModerationPrefs,
   listActors,
   listenSyncEvents,
   mediaCount,
@@ -20,6 +27,7 @@ import { FilterSidebar } from "./filter/FilterSidebar";
 import { MediaGrid } from "./grid/MediaGrid";
 import { StatusBar } from "./StatusBar";
 import { AccountPanel } from "./settings/AccountPanel";
+import { LightboxViewer } from "./viewer/LightboxViewer";
 
 interface Props {
   session: SessionInfo;
@@ -39,6 +47,9 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
   const [totalMedia, setTotalMedia] = useState(0);
   const [shownCount, setShownCount] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [prefs, setPrefs] = useState<ModerationPrefs | null>(null);
+  const [revealedIds, setRevealedIds] = useState<Set<number>>(new Set());
+  const [viewer, setViewer] = useState<MediaTile | null>(null);
   const searchRef = useRef<HTMLInputElement | null>(null);
 
   const updateUi = useCallback((next: UiFilters) => {
@@ -68,7 +79,21 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
   useEffect(() => {
     refreshMeta();
     void fetchSyncStatus().then(setSyncStatus);
+    // モデレーション設定（getPreferences）。取得失敗時は既定ラベルのみで判定。
+    getModerationPrefs()
+      .then(setPrefs)
+      .catch(() => setPrefs(null));
   }, [refreshMeta]);
+
+  // ラベルタイルの表示/再ブラーをトグルする（セッション内のみ保持）。
+  const revealTile = useCallback((mediaId: number) => {
+    setRevealedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(mediaId)) next.delete(mediaId);
+      else next.add(mediaId);
+      return next;
+    });
+  }, []);
 
   // 同期イベント購読
   useEffect(() => {
@@ -98,6 +123,8 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
   // キーボード: / 検索フォーカス、Esc 設定閉じ/検索解除/条件解除、r 手動同期
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // ビューアが開いている間はビューア側のキー操作に委ねる
+      if (viewer) return;
       const el = e.target as HTMLElement | null;
       const typing =
         el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA");
@@ -115,7 +142,7 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [settingsOpen, active, clearFilters]);
+  }, [settingsOpen, active, clearFilters, viewer]);
 
   return (
     <div className="grid-app">
@@ -176,7 +203,13 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
           syncTick={syncTick}
           hasActiveFilters={active}
           selectedId={selectedId}
-          onSelect={(t: MediaTile) => setSelectedId(t.mediaId)}
+          prefs={prefs}
+          revealedIds={revealedIds}
+          onSelect={(t: MediaTile) => {
+            setSelectedId(t.mediaId);
+            setViewer(t);
+          }}
+          onReveal={revealTile}
           onCountChange={setShownCount}
           onClearFilters={clearFilters}
           onStartInitialSync={() => void startInitialSync()}
@@ -189,6 +222,10 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
         totalMedia={totalMedia}
         shownCount={shownCount}
       />
+
+      {viewer && (
+        <LightboxViewer tile={viewer} onClose={() => setViewer(null)} />
+      )}
 
       {settingsOpen && (
         <div className="overlay" onClick={() => setSettingsOpen(false)}>

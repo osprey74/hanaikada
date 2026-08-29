@@ -937,3 +937,257 @@
   font-weight: 500;
   color: var(--text);
 }
+
+/* ===================================================================== */
+/* Phase 4: ライトボックスビューア（handoff 2b）とモデレーション          */
+/* ===================================================================== */
+
+/* --- タイルのラベルブラー（handoff 2g / DESIGN §8） --- */
+.tile-img-blurred {
+  filter: blur(24px);
+  transform: scale(1.08);
+}
+.tile-cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px;
+  text-align: center;
+  background: rgba(15, 16, 18, 0.55);
+}
+.tile-cover > .material-symbols-rounded {
+  font-size: 18px;
+  color: var(--text-3);
+}
+.tile-cover-label {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.tile-cover-hint {
+  font-size: 11px;
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  padding: 2px 8px;
+}
+/* 解除済みラベルタイルの「再度隠す」ボタン */
+.tile-rehide {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--r-badge);
+  background: var(--overlay-badge);
+  color: var(--text-2);
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 140ms ease-out;
+}
+.tile:hover .tile-rehide {
+  opacity: 1;
+}
+.tile-rehide:hover {
+  color: var(--text);
+}
+
+/* 動画再生エラー時の表示 */
+.viewer-video-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-2);
+  font-size: 12px;
+}
+.viewer-video-error > .material-symbols-rounded {
+  font-size: 28px;
+  color: var(--text-3);
+}
+
+/* --- ビューア --- */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: var(--overlay-viewer);
+  animation: viewer-in 180ms ease-out;
+}
+@keyframes viewer-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.viewer-faded {
+  opacity: 0.35;
+  transition: opacity 300ms ease-out;
+}
+.viewer-top {
+  height: 46px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  transition: opacity 200ms ease-out;
+}
+.viewer-count {
+  font-size: 12px;
+  color: var(--text-2);
+}
+.viewer-actions {
+  display: flex;
+  gap: 8px;
+}
+.viewer-btn {
+  height: 26px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+}
+.viewer-btn:hover {
+  color: var(--text);
+  border-color: var(--accent-border);
+}
+.viewer-btn .material-symbols-rounded {
+  font-size: 15px;
+}
+
+.viewer-stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+.viewer-img,
+.viewer-video {
+  max-height: 92%;
+  max-width: 100%;
+  object-fit: contain;
+}
+.viewer-img {
+  opacity: 0;
+  transition: opacity 180ms ease-out;
+}
+.viewer-img-loaded {
+  opacity: 1;
+}
+.viewer-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--r-control);
+  background: rgba(38, 40, 45, 0.6);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: opacity 200ms ease-out;
+}
+.viewer-nav:hover:not(:disabled) {
+  color: var(--text);
+}
+.viewer-nav:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+.viewer-nav-left {
+  left: 20px;
+}
+.viewer-nav-right {
+  right: 20px;
+}
+.viewer-nav .material-symbols-rounded {
+  font-size: 22px;
+}
+
+.viewer-meta {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 14px 80px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: opacity 200ms ease-out;
+}
+.viewer-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.viewer-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-pill);
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+.viewer-name {
+  font-size: 13px;
+  color: var(--text);
+}
+.viewer-handle {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.viewer-date {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.viewer-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+  -webkit-user-select: text;
+  user-select: text;
+}
+.viewer-alt {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.viewer-alt-label {
+  font-size: 11px;
+  color: var(--text-3);
+}
+.viewer-alt-body {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-2);
+  -webkit-user-select: text;
+  user-select: text;
+}

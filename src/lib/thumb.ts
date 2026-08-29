@@ -6,8 +6,14 @@ const isWindows =
   typeof navigator !== "undefined" && navigator.userAgent.includes("Windows");
 
 const THUMB_BASE = isWindows ? "http://thumb.localhost" : "thumb://localhost";
+const FULL_BASE = isWindows ? "http://full.localhost" : "full://localhost";
 
 /** 代表メディアの id からサムネ配信 URL を返す。 */
 export function thumbSrc(mediaId: number): string {
   return `${THUMB_BASE}/${mediaId}`;
+}
+
+/** メディア id から fullsize 配信 URL を返す（ビューアで開いた時のみ）。 */
+export function fullSrc(mediaId: number): string {
+  return `${FULL_BASE}/${mediaId}`;
 }

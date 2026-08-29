@@ -40,25 +40,38 @@
 - macOS の Tauri は WKWebView（WebKit）を使い、WebKit は Safari 同様 `<video>` で HLS をネイティブ再生できる。
 - hls.js は MSE（Media Source Extensions）対応ブラウザで動作する。WebView2 は MSE 対応のため hls.js が使える。
 
-**採用する実装パターン**
+**採用する実装パターン（実機確認で修正済み。下記「実機確認」参照）**
 ```ts
 import Hls from "hls.js";
 
 function attachHls(video: HTMLVideoElement, playlistUrl: string) {
-  if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    // macOS WKWebView: ネイティブ HLS
-    video.src = playlistUrl;
-  } else if (Hls.isSupported()) {
-    // Windows WebView2: MSE 経由で hls.js
-    const hls = new Hls();
+  // hls.js を最優先で判定する。WebView2 は HLS をネイティブ再生できないのに
+  // canPlayType が真値を返すことがあり、ネイティブ経路に入ると無音で停止するため。
+  if (Hls.isSupported()) {
+    const hls = new Hls({ enableWorker: false }); // ← Worker を切る（下記参照）
+    hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
     hls.loadSource(playlistUrl);
     hls.attachMedia(video);
     return () => hls.destroy(); // クリーンアップ必須
+  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+    // macOS WKWebView 等（hls.js 非対応環境のみ）: ネイティブ HLS
+    video.src = playlistUrl;
   } else {
     // 想定外環境のみ: サムネ + 外部ブラウザ誘導にフォールバック
   }
 }
 ```
+
+### 実機確認（2026-08-29・Windows WebView2）
+
+Phase 4 で Windows 実機（WebView2）にて hls.js の動作を確認し、**2 点の落とし穴**を確定した。
+
+1. **判定順は hls.js を先に。** WebView2 は `video.canPlayType("application/vnd.apple.mpegurl")` に真値（"maybe" 等）を返すことがあるが、実際には HLS をネイティブ再生できない。`canPlayType` を先に見るとネイティブ経路へ入り、**無音・無エラーで停止**する（`<video src=m3u8>` が何も再生しない）。→ **`Hls.isSupported()` を先に判定**する。
+2. **`enableWorker: false` を推奨。** 既定（Worker 有効）だと TS→fMP4 変換が Worker 側で無音失敗する事象があった。メインスレッド変換に切り替えると安定再生。
+3. 追加の堅牢化: `Hls.Events.ERROR` の fatal を数回リトライ（NETWORK/MEDIA）後に UI へ表示、`MANIFEST_PARSED` で `play()`（autoplay ブロック対策）。
+4. bsky の動画 CDN（`https://video.bsky.app/...playlist.m3u8`）は `Access-Control-Allow-Origin: *`・`Range` 許可で、CORS 問題は無し。セグメントは MPEG-TS（`avc1` H.264）。
+
+**確実性: 高**（Windows 実機で再生確認済み）。macOS(WKWebView) 側のネイティブ経路は Phase 5 のクロス OS ビルド時に実機確認する。
 
 **設計への含意**
 - Phase 4 の受け入れ条件「Windows / macOS 双方で動画が再生できる」は、hls.js 同梱により **両 OS でアプリ内再生を主経路にできる**。「不可な環境では外部ブラウザ誘導にフォールバック」は最終手段として残すが、通常は発火しない。

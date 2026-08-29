@@ -7,6 +7,8 @@ import type {
   DbStats,
   MediaFilter,
   MediaTile,
+  ModerationPrefs,
+  PostMediaItem,
   SessionInfo,
   SyncStatus,
   ThrottledEvent,
@@ -78,6 +80,18 @@ export function mediaCount(filter: MediaFilter): Promise<number> {
 /** メディア投稿を持つ投稿者の一覧（件数付き）を取得する。 */
 export function listActors(): Promise<ActorSummary[]> {
   return invoke<ActorSummary[]>("list_actors");
+}
+
+// --- ビューア / モデレーション（Phase 4） ---
+
+/** 指定投稿の全メディア（idx 順）を取得する。ライトボックス用。 */
+export function getPostMedia(postUri: string): Promise<PostMediaItem[]> {
+  return invoke<PostMediaItem[]>("get_post_media", { postUri });
+}
+
+/** モデレーション設定（アダルト設定・ラベル可視性）を取得する。 */
+export function getModerationPrefs(): Promise<ModerationPrefs> {
+  return invoke<ModerationPrefs>("get_moderation_prefs");
 }
 
 /** 同期進捗・完了・エラー・レート制限イベントを購読する。戻り値で解除する。 */

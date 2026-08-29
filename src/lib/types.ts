@@ -76,3 +76,28 @@ export interface ActorSummary {
   avatarUrl: string | null;
   count: number;
 }
+
+// --- ビューア / モデレーション（Phase 4） ---
+
+/** 投稿内の 1 メディア。Rust の `PostMediaItem` に対応。 */
+export interface PostMediaItem {
+  mediaId: number;
+  idx: number;
+  kind: string;
+  thumbUrl: string;
+  fullsizeUrl: string | null;
+  playlistUrl: string | null;
+  alt: string | null;
+  aspectW: number | null;
+  aspectH: number | null;
+}
+
+export interface LabelPref {
+  label: string;
+  visibility: string; // "ignore" | "show" | "warn" | "hide"
+}
+
+export interface ModerationPrefs {
+  adultContentEnabled: boolean;
+  labelPrefs: LabelPref[];
+}

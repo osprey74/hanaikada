@@ -121,3 +121,80 @@ pub async fn list_actors(db: State<'_, Arc<Db>>) -> Result<Vec<queries::ActorSum
     let conn = db.0.lock().unwrap();
     queries::list_actors(&conn)
 }
+
+// --- ビューア / モデレーション（Phase 4） ---
+
+/// 指定投稿の全メディア（idx 順）。ライトボックスの送り用。
+#[tauri::command]
+pub async fn get_post_media(
+    post_uri: String,
+    db: State<'_, Arc<Db>>,
+) -> Result<Vec<queries::PostMediaItem>> {
+    let conn = db.0.lock().unwrap();
+    queries::get_post_media(&conn, &post_uri)
+}
+
+/// フロントへ返すモデレーション設定。
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LabelPref {
+    pub label: String,
+    pub visibility: String, // "ignore" | "show" | "warn" | "hide"
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModerationPrefs {
+    pub adult_content_enabled: bool,
+    pub label_prefs: Vec<LabelPref>,
+}
+
+fn parse_prefs(value: &serde_json::Value) -> ModerationPrefs {
+    let mut adult_content_enabled = false;
+    let mut label_prefs = Vec::new();
+    if let Some(arr) = value.get("preferences").and_then(|v| v.as_array()) {
+        for item in arr {
+            match item.get("$type").and_then(|v| v.as_str()) {
+                Some("app.bsky.actor.defs#adultContentPref") => {
+                    adult_content_enabled =
+                        item.get("enabled").and_then(|v| v.as_bool()).unwrap_or(false);
+                }
+                Some("app.bsky.actor.defs#contentLabelPref") => {
+                    if let (Some(label), Some(vis)) = (
+                        item.get("label").and_then(|v| v.as_str()),
+                        item.get("visibility").and_then(|v| v.as_str()),
+                    ) {
+                        label_prefs.push(LabelPref {
+                            label: label.to_string(),
+                            visibility: vis.to_string(),
+                        });
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    ModerationPrefs {
+        adult_content_enabled,
+        label_prefs,
+    }
+}
+
+/// 起動時に呼ぶ。getPreferences からアダルト設定・ラベル可視性を取得する。
+/// 401 は一度だけリフレッシュして再試行する。
+#[tauri::command]
+pub async fn get_moderation_prefs(
+    manager: State<'_, Arc<SessionManager>>,
+) -> Result<ModerationPrefs> {
+    let client = manager.client();
+    let token = manager.valid_access_token().await?;
+    let value = match client.get_preferences(&token).await {
+        Ok(v) => v,
+        Err(crate::error::AppError::Unauthorized) => {
+            let fresh = manager.refresh().await?;
+            client.get_preferences(&fresh).await?
+        }
+        Err(e) => return Err(e),
+    };
+    Ok(parse_prefs(&value))
+}

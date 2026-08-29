@@ -332,7 +332,7 @@ pub fn list_actors(conn: &Connection) -> Result<Vec<ActorSummary>> {
     Ok(out)
 }
 
-/// 代表メディアのサムネ URL を引く（サムネ配信プロトコルのフォールバック解決用）。
+/// 代表メディアのサムネ URL を引く（サムネ配信プロトコルの解決用）。
 pub fn thumb_url_of(conn: &Connection, media_id: i64) -> Result<Option<String>> {
     Ok(conn
         .query_row(
@@ -341,6 +341,59 @@ pub fn thumb_url_of(conn: &Connection, media_id: i64) -> Result<Option<String>> 
             |r| r.get::<_, String>(0),
         )
         .optional()?)
+}
+
+/// メディアの fullsize URL を引く（fullsize 配信プロトコルの解決用）。動画等は None。
+pub fn fullsize_url_of(conn: &Connection, media_id: i64) -> Result<Option<String>> {
+    Ok(conn
+        .query_row(
+            "SELECT fullsize_url FROM media WHERE id = ?1",
+            params![media_id],
+            |r| r.get::<_, Option<String>>(0),
+        )
+        .optional()?
+        .flatten())
+}
+
+/// ビューア用: 投稿内の全メディア（idx 順）。
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PostMediaItem {
+    pub media_id: i64,
+    pub idx: i64,
+    pub kind: String,
+    pub thumb_url: String,
+    pub fullsize_url: Option<String>,
+    pub playlist_url: Option<String>,
+    pub alt: Option<String>,
+    pub aspect_w: Option<i64>,
+    pub aspect_h: Option<i64>,
+}
+
+/// 指定投稿の全メディアを idx 順で返す（ライトボックスの送り用）。
+pub fn get_post_media(conn: &Connection, post_uri: &str) -> Result<Vec<PostMediaItem>> {
+    let mut stmt = conn.prepare(
+        "SELECT id, idx, kind, thumb_url, fullsize_url, playlist_url, alt, aspect_w, aspect_h
+         FROM media WHERE post_uri = ?1 ORDER BY idx",
+    )?;
+    let rows = stmt.query_map(params![post_uri], |r| {
+        Ok(PostMediaItem {
+            media_id: r.get(0)?,
+            idx: r.get(1)?,
+            kind: r.get(2)?,
+            thumb_url: r.get(3)?,
+            fullsize_url: r.get(4)?,
+            playlist_url: r.get(5)?,
+            alt: r.get(6)?,
+            aspect_w: r.get(7)?,
+            aspect_h: r.get(8)?,
+        })
+    })?;
+    let mut out = Vec::new();
+    for row in rows {
+        out.push(row?);
+    }
+    Ok(out)
 }
 
 // --- sync_state（バックフィル cursor・遡り基準） ---

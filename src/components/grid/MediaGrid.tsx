@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Virtuoso } from "react-virtuoso";
 import { queryMedia, mediaCount } from "../../lib/api";
-import type { MediaFilter, MediaTile as Tile } from "../../lib/types";
+import type {
+  MediaFilter,
+  MediaTile as Tile,
+  ModerationPrefs,
+} from "../../lib/types";
 import { MediaTile } from "./MediaTile";
 
 const PAGE = 60;
@@ -19,7 +23,10 @@ interface Props {
   syncTick: number;
   hasActiveFilters: boolean;
   selectedId: number | null;
+  prefs: ModerationPrefs | null;
+  revealedIds: Set<number>;
   onSelect: (tile: Tile) => void;
+  onReveal: (mediaId: number) => void;
   onCountChange: (shown: number) => void;
   onClearFilters: () => void;
   onStartInitialSync: () => void;
@@ -31,7 +38,10 @@ export function MediaGrid({
   syncTick,
   hasActiveFilters,
   selectedId,
+  prefs,
+  revealedIds,
   onSelect,
+  onReveal,
   onCountChange,
   onClearFilters,
   onStartInitialSync,
@@ -208,7 +218,10 @@ export function MediaGrid({
                     <MediaTile
                       tile={t}
                       selected={t.mediaId === selectedId}
+                      prefs={prefs}
+                      revealed={revealedIds.has(t.mediaId)}
                       onSelect={onSelect}
+                      onReveal={onReveal}
                     />
                   </div>
                 )}
