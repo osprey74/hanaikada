@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { currentSession } from "./lib/api";
 import type { SessionInfo } from "./lib/types";
 import { LoginForm } from "./components/settings/LoginForm";
-import { AccountPanel } from "./components/settings/AccountPanel";
+import { GridApp } from "./components/GridApp";
 
 type View =
   | { kind: "loading" }
@@ -26,6 +26,16 @@ export default function App() {
     };
   }, []);
 
+  if (view.kind === "home") {
+    return (
+      <GridApp
+        session={view.session}
+        onSessionChange={(session) => setView({ kind: "home", session })}
+        onLoggedOut={() => setView({ kind: "login" })}
+      />
+    );
+  }
+
   return (
     <div className="app">
       <header className="header">
@@ -41,14 +51,6 @@ export default function App() {
         {view.kind === "login" && (
           <LoginForm
             onLoggedIn={(session) => setView({ kind: "home", session })}
-          />
-        )}
-
-        {view.kind === "home" && (
-          <AccountPanel
-            session={view.session}
-            onSessionChange={(session) => setView({ kind: "home", session })}
-            onLoggedOut={() => setView({ kind: "login" })}
           />
         )}
       </div>

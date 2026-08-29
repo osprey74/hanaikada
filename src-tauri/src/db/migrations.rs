@@ -7,7 +7,7 @@ use crate::error::Result;
 use rusqlite::Connection;
 
 /// 現在のスキーマ版。マイグレーションを追加したらインクリメントする。
-pub const SCHEMA_VERSION: i64 = 1;
+pub const SCHEMA_VERSION: i64 = 2;
 
 /// v1: DESIGN §5 の初期スキーマ（actors / posts / media / sync_state）。
 const V1: &str = r#"
@@ -60,6 +60,22 @@ CREATE INDEX idx_posts_author     ON posts(author_did, indexed_at DESC);
 CREATE INDEX idx_media_kind       ON media(kind);
 "#;
 
+/// v2: ALT・本文の全文検索（DESIGN §7.3）。
+/// 日本語の部分一致に対応するため `trigram` トークナイザを使う（3 文字以上で有効。
+/// 2 文字以下のクエリは呼び出し側で LIKE にフォールバックする）。
+/// rowid = media.id とし、alt（当該メディア）と text（親投稿）を索引する。
+const V2: &str = r#"
+CREATE VIRTUAL TABLE media_fts USING fts5(
+  alt, text,
+  tokenize = 'trigram'
+);
+
+-- 既存メディアの索引を作り直す（Phase 2 までに取り込んだ分の backfill）
+INSERT INTO media_fts(rowid, alt, text)
+  SELECT m.id, COALESCE(m.alt, ''), COALESCE(p.text, '')
+  FROM media m JOIN posts p ON p.uri = m.post_uri;
+"#;
+
 /// 現在の `user_version` を読み、必要なマイグレーションを順に適用する。
 pub fn migrate(conn: &Connection) -> Result<()> {
     let current: i64 = conn.query_row("PRAGMA user_version", [], |row| row.get(0))?;
@@ -67,7 +83,9 @@ pub fn migrate(conn: &Connection) -> Result<()> {
     if current < 1 {
         conn.execute_batch(V1)?;
     }
-    // 将来: if current < 2 { conn.execute_batch(V2)?; } ...
+    if current < 2 {
+        conn.execute_batch(V2)?;
+    }
 
     if current != SCHEMA_VERSION {
         // PRAGMA はパラメータバインドできないため直書き（値は内部定数で安全）

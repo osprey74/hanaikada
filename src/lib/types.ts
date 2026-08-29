@@ -31,3 +31,48 @@ export interface ThrottledEvent {
   seconds: number;
   until: number;
 }
+
+// --- グリッド / フィルタ（Phase 3） ---
+
+export type MediaType = "all" | "image" | "video";
+
+/** Rust の `MediaFilter`（serde camelCase）に対応。全条件 AND。 */
+export interface MediaFilter {
+  mediaType?: MediaType;
+  sinceTs?: number | null;
+  untilTs?: number | null;
+  includeReposts?: boolean;
+  actorDids?: string[];
+  query?: string;
+}
+
+/** グリッドの 1 タイル（まとめ表示: 投稿単位）。Rust の `MediaTile` に対応。 */
+export interface MediaTile {
+  postUri: string;
+  mediaId: number;
+  kind: string;
+  thumbUrl: string;
+  aspectW: number | null;
+  aspectH: number | null;
+  alt: string | null;
+  mediaCount: number;
+  hasVideo: boolean;
+  authorDid: string;
+  authorHandle: string;
+  authorDisplayName: string | null;
+  authorAvatar: string | null;
+  reposterHandle: string | null;
+  indexedAt: number;
+  createdAt: number;
+  text: string | null;
+  labelsJson: string | null;
+}
+
+/** サイドバーの投稿者リスト行。Rust の `ActorSummary` に対応。 */
+export interface ActorSummary {
+  did: string;
+  handle: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  count: number;
+}

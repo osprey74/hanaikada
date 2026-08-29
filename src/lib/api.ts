@@ -3,7 +3,10 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import type {
+  ActorSummary,
   DbStats,
+  MediaFilter,
+  MediaTile,
   SessionInfo,
   SyncStatus,
   ThrottledEvent,
@@ -54,6 +57,27 @@ export function syncStatus(): Promise<SyncStatus> {
 /** DB の件数統計を取得する。 */
 export function dbStats(): Promise<DbStats> {
   return invoke<DbStats>("db_stats");
+}
+
+// --- 参照（Phase 3） ---
+
+/** 絞り込みに一致するタイルを新しい順にページング取得する。 */
+export function queryMedia(
+  filter: MediaFilter,
+  offset: number,
+  limit: number
+): Promise<MediaTile[]> {
+  return invoke<MediaTile[]>("query_media", { filter, offset, limit });
+}
+
+/** 絞り込みに一致するタイル総数を取得する。 */
+export function mediaCount(filter: MediaFilter): Promise<number> {
+  return invoke<number>("media_count", { filter });
+}
+
+/** メディア投稿を持つ投稿者の一覧（件数付き）を取得する。 */
+export function listActors(): Promise<ActorSummary[]> {
+  return invoke<ActorSummary[]>("list_actors");
 }
 
 /** 同期進捗・完了・エラー・レート制限イベントを購読する。戻り値で解除する。 */

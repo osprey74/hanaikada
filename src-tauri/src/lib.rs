@@ -5,6 +5,7 @@ mod bsky;
 mod commands;
 mod db;
 mod error;
+mod media;
 mod sync;
 
 use auth::SessionManager;
@@ -30,11 +31,15 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .register_asynchronous_uri_scheme_protocol(media::THUMB_SCHEME, media::handle_thumb_request)
         .setup(|app| {
             let data_dir = app.path().data_dir()?.join(APP_DIR);
 
             // SQLite（DESIGN §5）。同期エンジンと UI クエリで共有するため Arc 化。
             let db = Arc::new(Db::open(&data_dir.join("hanaikada.db"))?);
+
+            // サムネのディスクキャッシュ（thumb スキームが参照）。
+            let thumb_cache = media::ThumbCache::new(data_dir.clone())?;
 
             // セッション管理。起動時に前回セッションを復元する。
             let manager = Arc::new(SessionManager::new(data_dir)?);
@@ -52,6 +57,7 @@ pub fn run() {
             app.manage(db);
             app.manage(manager);
             app.manage(syncer);
+            app.manage(thumb_cache);
 
             Ok(())
         })
@@ -65,6 +71,9 @@ pub fn run() {
             commands::cancel_sync,
             commands::sync_status,
             commands::db_stats,
+            commands::query_media,
+            commands::media_count,
+            commands::list_actors,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

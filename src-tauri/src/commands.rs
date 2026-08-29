@@ -90,3 +90,34 @@ pub async fn db_stats(db: State<'_, Arc<Db>>) -> Result<DbStats> {
         actors: queries::actor_total(&conn)?,
     })
 }
+
+// --- 参照（Phase 3） ---
+
+/// 絞り込みに一致するタイル（投稿）を新しい順に返す（まとめ表示・ページング）。
+#[tauri::command]
+pub async fn query_media(
+    filter: queries::MediaFilter,
+    offset: i64,
+    limit: i64,
+    db: State<'_, Arc<Db>>,
+) -> Result<Vec<queries::MediaTile>> {
+    let conn = db.0.lock().unwrap();
+    queries::query_media(&conn, &filter, offset, limit)
+}
+
+/// 絞り込みに一致するタイル総数（ステータスバー用）。
+#[tauri::command]
+pub async fn media_count(
+    filter: queries::MediaFilter,
+    db: State<'_, Arc<Db>>,
+) -> Result<i64> {
+    let conn = db.0.lock().unwrap();
+    queries::media_count(&conn, &filter)
+}
+
+/// メディア投稿を持つ投稿者の一覧（件数付き・降順）。サイドバー用。
+#[tauri::command]
+pub async fn list_actors(db: State<'_, Arc<Db>>) -> Result<Vec<queries::ActorSummary>> {
+    let conn = db.0.lock().unwrap();
+    queries::list_actors(&conn)
+}

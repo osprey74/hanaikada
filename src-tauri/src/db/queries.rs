@@ -6,7 +6,8 @@
 
 use crate::error::Result;
 use crate::sync::extractor::{ActorRow, ExtractedPost};
-use rusqlite::{params, Connection, OptionalExtension};
+use rusqlite::{params, params_from_iter, types::Value, Connection, OptionalExtension};
+use serde::{Deserialize, Serialize};
 
 /// アクターを upsert する（handle / 表示名 / アバターを最新化）。
 pub fn upsert_actor(conn: &Connection, actor: &ActorRow, now: i64) -> Result<()> {
@@ -83,6 +84,18 @@ pub fn insert_post_with_media(conn: &Connection, post: &ExtractedPost, now: i64)
                 m.aspect_h,
             ],
         )?;
+        if n == 1 {
+            // 全文検索の索引を同時に張る（rowid = 挿入した media.id）。
+            let media_id = conn.last_insert_rowid();
+            conn.execute(
+                "INSERT INTO media_fts (rowid, alt, text) VALUES (?1, ?2, ?3)",
+                params![
+                    media_id,
+                    m.alt.as_deref().unwrap_or(""),
+                    post.text.as_deref().unwrap_or(""),
+                ],
+            )?;
+        }
         inserted += n;
     }
     Ok(inserted)
@@ -101,6 +114,233 @@ pub fn post_total(conn: &Connection) -> Result<i64> {
 /// actors の総件数。
 pub fn actor_total(conn: &Connection) -> Result<i64> {
     Ok(conn.query_row("SELECT count(*) FROM actors", [], |r| r.get(0))?)
+}
+
+// --- 参照系（グリッド用・Phase 3） ---
+
+/// フロントから渡すグリッドの絞り込み条件（DESIGN §7.3）。全条件 AND。
+#[derive(Debug, Default, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MediaFilter {
+    /// "all" | "image" | "video"。None/"all" は種別無指定。
+    pub media_type: Option<String>,
+    /// indexed_at >= since_ts（期間の下限。今日/7日/30日はフロントで算出）。
+    pub since_ts: Option<i64>,
+    /// indexed_at < until_ts（カスタム期間の上限）。
+    pub until_ts: Option<i64>,
+    /// false ならリポスト経由（reposter_did あり）を除外。None は含める。
+    pub include_reposts: Option<bool>,
+    /// 投稿者 DID の OR 絞り込み（author_did）。
+    pub actor_dids: Option<Vec<String>>,
+    /// ALT・本文の検索語（3 文字以上は FTS5 trigram、以下は LIKE）。
+    pub query: Option<String>,
+}
+
+/// グリッドの 1 タイル（既定はまとめ表示: 投稿単位、代表メディア + 枚数）。
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MediaTile {
+    pub post_uri: String,
+    /// 代表メディア（最小 idx。種別絞り込み時はその種別の最小 idx）の id。サムネ配信のキー。
+    pub media_id: i64,
+    pub kind: String,
+    pub thumb_url: String,
+    pub aspect_w: Option<i64>,
+    pub aspect_h: Option<i64>,
+    pub alt: Option<String>,
+    /// 投稿内のメディア総数（>1 で枚数バッジ）。
+    pub media_count: i64,
+    /// 投稿内に動画を含むか（動画バッジ）。
+    pub has_video: bool,
+    pub author_did: String,
+    pub author_handle: String,
+    pub author_display_name: Option<String>,
+    pub author_avatar: Option<String>,
+    /// リポスト経由の場合のリポスト元ハンドル。
+    pub reposter_handle: Option<String>,
+    pub indexed_at: i64,
+    pub created_at: i64,
+    pub text: Option<String>,
+    pub labels_json: Option<String>,
+}
+
+/// サイドバーの投稿者リスト行（メディア投稿を持つ author のみ・件数付き）。
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ActorSummary {
+    pub did: String,
+    pub handle: String,
+    pub display_name: Option<String>,
+    pub avatar_url: Option<String>,
+    pub count: i64,
+}
+
+/// WHERE 条件と対応するパラメータを組み立てる（query_media / media_count で共用）。
+/// `m`（メディア）・`p`（投稿）・`a`/`ra`（アクター）のエイリアス前提。
+fn build_conditions(filter: &MediaFilter) -> (Vec<String>, Vec<Value>) {
+    let mut conds: Vec<String> = vec!["p.is_hidden = 0".to_string()];
+    let mut params: Vec<Value> = Vec::new();
+
+    match filter.media_type.as_deref() {
+        Some("image") | Some("video") => {
+            conds.push("m.kind = ?".to_string());
+            params.push(Value::Text(filter.media_type.clone().unwrap()));
+        }
+        _ => {}
+    }
+    if let Some(since) = filter.since_ts {
+        conds.push("p.indexed_at >= ?".to_string());
+        params.push(Value::Integer(since));
+    }
+    if let Some(until) = filter.until_ts {
+        conds.push("p.indexed_at < ?".to_string());
+        params.push(Value::Integer(until));
+    }
+    if filter.include_reposts == Some(false) {
+        conds.push("p.reposter_did IS NULL".to_string());
+    }
+    if let Some(dids) = filter.actor_dids.as_ref().filter(|v| !v.is_empty()) {
+        let placeholders = vec!["?"; dids.len()].join(", ");
+        conds.push(format!("p.author_did IN ({placeholders})"));
+        for d in dids {
+            params.push(Value::Text(d.clone()));
+        }
+    }
+    if let Some(q) = filter.query.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        if q.chars().count() >= 3 {
+            // FTS5 trigram。フレーズとして扱い、内部の " は "" にエスケープする。
+            conds.push(
+                "p.uri IN (SELECT m2.post_uri FROM media m2 \
+                 JOIN media_fts ON media_fts.rowid = m2.id WHERE media_fts MATCH ?)"
+                    .to_string(),
+            );
+            params.push(Value::Text(format!("\"{}\"", q.replace('"', "\"\""))));
+        } else {
+            // 2 文字以下は trigram で拾えないため LIKE にフォールバック。
+            conds.push(
+                "(p.text LIKE ? OR EXISTS(SELECT 1 FROM media ml \
+                 WHERE ml.post_uri = p.uri AND ml.alt LIKE ?))"
+                    .to_string(),
+            );
+            let like = format!("%{q}%");
+            params.push(Value::Text(like.clone()));
+            params.push(Value::Text(like));
+        }
+    }
+    (conds, params)
+}
+
+/// 絞り込みに一致する投稿（タイル）を新しい順に返す（まとめ表示・ページング）。
+pub fn query_media(
+    conn: &Connection,
+    filter: &MediaFilter,
+    offset: i64,
+    limit: i64,
+) -> Result<Vec<MediaTile>> {
+    let (conds, mut params) = build_conditions(filter);
+    let where_sql = conds.join(" AND ");
+
+    // min(m.idx) を単一集約として使い、bare column（m.*）を代表行（最小 idx）から取る
+    // SQLite の仕様を利用する。media_count / has_video は投稿全体の相関サブクエリ。
+    let sql = format!(
+        "SELECT p.uri, m.id, m.kind, m.thumb_url, m.aspect_w, m.aspect_h, m.alt,
+                (SELECT count(*) FROM media mc WHERE mc.post_uri = p.uri) AS media_count,
+                EXISTS(SELECT 1 FROM media mv WHERE mv.post_uri = p.uri AND mv.kind = 'video') AS has_video,
+                p.author_did, a.handle, a.display_name, a.avatar_url,
+                ra.handle AS reposter_handle,
+                p.indexed_at, p.created_at, p.text, p.labels_json,
+                min(m.idx) AS rep_idx
+         FROM posts p
+         JOIN actors a ON a.did = p.author_did
+         LEFT JOIN actors ra ON ra.did = p.reposter_did
+         JOIN media m ON m.post_uri = p.uri
+         WHERE {where_sql}
+         GROUP BY p.uri
+         ORDER BY p.indexed_at DESC, p.uri DESC
+         LIMIT ? OFFSET ?"
+    );
+    params.push(Value::Integer(limit));
+    params.push(Value::Integer(offset));
+
+    let mut stmt = conn.prepare(&sql)?;
+    let rows = stmt.query_map(params_from_iter(params), |r| {
+        Ok(MediaTile {
+            post_uri: r.get(0)?,
+            media_id: r.get(1)?,
+            kind: r.get(2)?,
+            thumb_url: r.get(3)?,
+            aspect_w: r.get(4)?,
+            aspect_h: r.get(5)?,
+            alt: r.get(6)?,
+            media_count: r.get(7)?,
+            has_video: r.get::<_, i64>(8)? != 0,
+            author_did: r.get(9)?,
+            author_handle: r.get(10)?,
+            author_display_name: r.get(11)?,
+            author_avatar: r.get(12)?,
+            reposter_handle: r.get(13)?,
+            indexed_at: r.get(14)?,
+            created_at: r.get(15)?,
+            text: r.get(16)?,
+            labels_json: r.get(17)?,
+        })
+    })?;
+    let mut out = Vec::new();
+    for row in rows {
+        out.push(row?);
+    }
+    Ok(out)
+}
+
+/// 絞り込みに一致するタイル（投稿）総数（ステータスバー「N 件中 M 件」用）。
+pub fn media_count(conn: &Connection, filter: &MediaFilter) -> Result<i64> {
+    let (conds, params) = build_conditions(filter);
+    let where_sql = conds.join(" AND ");
+    let sql = format!(
+        "SELECT COUNT(DISTINCT p.uri)
+         FROM posts p JOIN media m ON m.post_uri = p.uri
+         WHERE {where_sql}"
+    );
+    Ok(conn.query_row(&sql, params_from_iter(params), |r| r.get(0))?)
+}
+
+/// メディア投稿を持つ投稿者の一覧（件数の多い順）。サイドバー用。
+pub fn list_actors(conn: &Connection) -> Result<Vec<ActorSummary>> {
+    let mut stmt = conn.prepare(
+        "SELECT p.author_did, a.handle, a.display_name, a.avatar_url,
+                COUNT(DISTINCT p.uri) AS cnt
+         FROM posts p
+         JOIN actors a ON a.did = p.author_did
+         JOIN media m ON m.post_uri = p.uri
+         WHERE p.is_hidden = 0
+         GROUP BY p.author_did
+         ORDER BY cnt DESC, a.handle ASC",
+    )?;
+    let rows = stmt.query_map([], |r| {
+        Ok(ActorSummary {
+            did: r.get(0)?,
+            handle: r.get(1)?,
+            display_name: r.get(2)?,
+            avatar_url: r.get(3)?,
+            count: r.get(4)?,
+        })
+    })?;
+    let mut out = Vec::new();
+    for row in rows {
+        out.push(row?);
+    }
+    Ok(out)
+}
+
+/// 代表メディアのサムネ URL を引く（サムネ配信プロトコルのフォールバック解決用）。
+pub fn thumb_url_of(conn: &Connection, media_id: i64) -> Result<Option<String>> {
+    Ok(conn
+        .query_row(
+            "SELECT thumb_url FROM media WHERE id = ?1",
+            params![media_id],
+            |r| r.get::<_, String>(0),
+        )
+        .optional()?)
 }
 
 // --- sync_state（バックフィル cursor・遡り基準） ---
@@ -228,5 +468,229 @@ mod tests {
         set_sync_state(&c, KEY, Some("CUR_2"), 200, Some(3000)).unwrap();
         assert_eq!(get_sync_cursor(&c, KEY).unwrap().as_deref(), Some("CUR_2"));
         assert_eq!(get_oldest_seen(&c, KEY).unwrap(), Some(3000));
+    }
+
+    // --- 参照系（query_media / list_actors / media_count）---
+
+    use crate::sync::extractor::{ActorRow, ExtractedMedia, ExtractedPost};
+
+    fn actor(did: &str, handle: &str) -> ActorRow {
+        ActorRow {
+            did: did.into(),
+            handle: handle.into(),
+            display_name: None,
+            avatar_url: None,
+        }
+    }
+
+    fn img(idx: i64, alt: Option<&str>) -> ExtractedMedia {
+        ExtractedMedia {
+            idx,
+            kind: "image",
+            thumb_url: format!("https://cdn/thumb{idx}"),
+            fullsize_url: Some(format!("https://cdn/full{idx}")),
+            playlist_url: None,
+            alt: alt.map(str::to_string),
+            aspect_w: Some(4),
+            aspect_h: Some(3),
+        }
+    }
+
+    fn video(idx: i64) -> ExtractedMedia {
+        ExtractedMedia {
+            idx,
+            kind: "video",
+            thumb_url: format!("https://cdn/vthumb{idx}"),
+            fullsize_url: None,
+            playlist_url: Some("https://cdn/playlist.m3u8".into()),
+            alt: None,
+            aspect_w: Some(9),
+            aspect_h: Some(16),
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn post(
+        uri: &str,
+        author: ActorRow,
+        reposter: Option<ActorRow>,
+        indexed_at: i64,
+        text: Option<&str>,
+        media: Vec<ExtractedMedia>,
+    ) -> ExtractedPost {
+        ExtractedPost {
+            uri: uri.into(),
+            cid: "cid".into(),
+            author,
+            reposter,
+            created_at: indexed_at,
+            indexed_at,
+            text: text.map(str::to_string),
+            labels_json: None,
+            media,
+        }
+    }
+
+    /// テスト用データ: 4 枚組（alice, alt "a cat photo"）/ 動画（bob）/ リポスト（carol→alice, 単画像）。
+    fn seed(c: &Connection) {
+        let alice = actor("did:alice", "alice.test");
+        let bob = actor("did:bob", "bob.test");
+        let carol = actor("did:carol", "carol.test");
+
+        insert_post_with_media(
+            c,
+            &post(
+                "at://alice/1",
+                alice.clone(),
+                None,
+                1000,
+                Some("四枚組の投稿"),
+                vec![
+                    img(0, Some("a cat photo")),
+                    img(1, None),
+                    img(2, None),
+                    img(3, None),
+                ],
+            ),
+            9999,
+        )
+        .unwrap();
+
+        insert_post_with_media(
+            c,
+            &post("at://bob/1", bob, None, 2000, Some("動画です"), vec![video(0)]),
+            9999,
+        )
+        .unwrap();
+
+        insert_post_with_media(
+            c,
+            &post(
+                "at://alice/2",
+                alice,
+                Some(carol),
+                3000,
+                Some("硝子細工の写真"),
+                vec![img(0, Some("硝子のグラス"))],
+            ),
+            9999,
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn query_media_groups_by_post_newest_first() {
+        let c = conn();
+        seed(&c);
+        let tiles = query_media(&c, &MediaFilter::default(), 0, 100).unwrap();
+        assert_eq!(tiles.len(), 3, "投稿単位で 3 タイル");
+        // 新しい順: alice/2(3000) → bob/1(2000) → alice/1(1000)
+        assert_eq!(tiles[0].post_uri, "at://alice/2");
+        assert_eq!(tiles[1].post_uri, "at://bob/1");
+        assert_eq!(tiles[2].post_uri, "at://alice/1");
+
+        let four = &tiles[2];
+        assert_eq!(four.media_count, 4, "4 枚組は media_count=4");
+        assert_eq!(four.kind, "image");
+        assert!(!four.has_video);
+        // 代表は最小 idx（idx=0, alt="a cat photo"）
+        assert_eq!(four.alt.as_deref(), Some("a cat photo"));
+
+        // リポストはリポスト元ハンドルを持つ
+        assert_eq!(tiles[0].reposter_handle.as_deref(), Some("carol.test"));
+        // 動画投稿は has_video
+        assert!(tiles[1].has_video);
+        assert_eq!(tiles[1].kind, "video");
+    }
+
+    #[test]
+    fn query_media_filters_by_kind() {
+        let c = conn();
+        seed(&c);
+        let f = MediaFilter {
+            media_type: Some("video".into()),
+            ..Default::default()
+        };
+        let tiles = query_media(&c, &f, 0, 100).unwrap();
+        assert_eq!(tiles.len(), 1);
+        assert_eq!(tiles[0].post_uri, "at://bob/1");
+    }
+
+    #[test]
+    fn query_media_excludes_reposts_when_disabled() {
+        let c = conn();
+        seed(&c);
+        let f = MediaFilter {
+            include_reposts: Some(false),
+            ..Default::default()
+        };
+        let tiles = query_media(&c, &f, 0, 100).unwrap();
+        assert!(tiles.iter().all(|t| t.reposter_handle.is_none()));
+        assert_eq!(tiles.len(), 2, "リポスト 1 件を除外");
+    }
+
+    #[test]
+    fn query_media_filters_by_actor() {
+        let c = conn();
+        seed(&c);
+        let f = MediaFilter {
+            actor_dids: Some(vec!["did:alice".into()]),
+            ..Default::default()
+        };
+        let tiles = query_media(&c, &f, 0, 100).unwrap();
+        assert_eq!(tiles.len(), 2);
+        assert!(tiles.iter().all(|t| t.author_did == "did:alice"));
+    }
+
+    #[test]
+    fn query_media_search_fts_and_like_fallback() {
+        let c = conn();
+        seed(&c);
+
+        // 3 文字以上（英字）→ FTS5 trigram。alt "a cat photo" にヒット
+        let f = MediaFilter {
+            query: Some("cat".into()),
+            ..Default::default()
+        };
+        let tiles = query_media(&c, &f, 0, 100).unwrap();
+        assert_eq!(tiles.len(), 1);
+        assert_eq!(tiles[0].post_uri, "at://alice/1");
+
+        // 3 文字以上（日本語）→ 本文 "硝子細工の写真" にヒット
+        let f = MediaFilter {
+            query: Some("硝子細".into()),
+            ..Default::default()
+        };
+        let tiles = query_media(&c, &f, 0, 100).unwrap();
+        assert_eq!(tiles.len(), 1);
+        assert_eq!(tiles[0].post_uri, "at://alice/2");
+
+        // 2 文字 → LIKE フォールバック。本文/alt の "硝子" にヒット
+        let f = MediaFilter {
+            query: Some("硝子".into()),
+            ..Default::default()
+        };
+        let tiles = query_media(&c, &f, 0, 100).unwrap();
+        assert_eq!(tiles.len(), 1);
+        assert_eq!(tiles[0].post_uri, "at://alice/2");
+    }
+
+    #[test]
+    fn media_count_and_list_actors() {
+        let c = conn();
+        seed(&c);
+        assert_eq!(media_count(&c, &MediaFilter::default()).unwrap(), 3);
+
+        let f = MediaFilter {
+            media_type: Some("image".into()),
+            ..Default::default()
+        };
+        assert_eq!(media_count(&c, &f).unwrap(), 2, "画像投稿は 2 件");
+
+        let actors = list_actors(&c).unwrap();
+        // alice=2, bob=1（件数降順）
+        assert_eq!(actors[0].did, "did:alice");
+        assert_eq!(actors[0].count, 2);
+        assert!(actors.iter().any(|a| a.did == "did:bob" && a.count == 1));
     }
 }
