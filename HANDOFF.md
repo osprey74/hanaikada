@@ -66,10 +66,10 @@ hanaikada/
 
 **受け入れ条件**
 
-- [ ] handle と App Password でログインでき、再起動後もセッションが復元される
-- [ ] 401 発生時に自動で `refreshSession` が走り、透過的にリトライされる
-- [ ] キーチェーンに保存されているのが `refreshJwt` のみであることを確認できる
-- [ ] ログアウトでキーチェーンのエントリが削除される
+- [x] handle と App Password でログインでき、再起動後もセッションが復元される（2026-08-29 実機確認: `osprey74.com` でログイン→再起動で「セッションを復元しました」）
+- [x] 401 発生時に自動で `refreshSession` が走り、透過的にリトライされる（復元直後の accessJwt 不在状態で `validate_session` → refresh 経由で getSession 成功を確認）
+- [x] キーチェーンに保存されているのが `refreshJwt` のみであることを確認できる（Credential Manager に `refresh_jwt.io.github.osprey74.hanaikada` 1 件のみ）
+- [x] ログアウトでキーチェーンのエントリが削除される（ログアウト後、キーチェーン・config.json とも削除を確認）
 
 ### Phase 2 — 同期エンジン
 
