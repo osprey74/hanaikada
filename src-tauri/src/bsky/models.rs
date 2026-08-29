@@ -48,3 +48,57 @@ pub struct XrpcErrorBody {
     #[serde(default)]
     pub message: Option<String>,
 }
+
+// --- app.bsky.feed.getTimeline（Phase 2） ---
+//
+// embed / record / reason / labels は $type によるバリアントが多く、体系変更にも追従したいので
+// `serde_json::Value` のまま保持し、抽出は extractor で行う（DESIGN §5.1「labels は解釈せず保持」に倣う）。
+
+use serde_json::Value;
+
+/// `app.bsky.feed.getTimeline` のレスポンス。
+#[derive(Debug, Deserialize)]
+pub struct GetTimelineResponse {
+    pub feed: Vec<FeedViewPost>,
+    #[serde(default)]
+    pub cursor: Option<String>,
+}
+
+/// タイムライン 1 件（投稿＋リポスト等の理由）。
+#[derive(Debug, Deserialize)]
+pub struct FeedViewPost {
+    pub post: PostView,
+    /// `app.bsky.feed.defs#reasonRepost` など。存在すれば extractor が解釈する。
+    #[serde(default)]
+    pub reason: Option<Value>,
+}
+
+/// 投稿ビュー。
+#[derive(Debug, Deserialize)]
+pub struct PostView {
+    pub uri: String,
+    pub cid: String,
+    pub author: Author,
+    /// `app.bsky.feed.post` レコード（text / createdAt を取り出す）。
+    #[serde(default)]
+    pub record: Option<Value>,
+    /// 添付。`app.bsky.embed.*#view`。
+    #[serde(default)]
+    pub embed: Option<Value>,
+    #[serde(rename = "indexedAt")]
+    pub indexed_at: String,
+    /// 自己ラベル・ラベラー由来ラベルの配列。生のまま保持する。
+    #[serde(default)]
+    pub labels: Option<Value>,
+}
+
+/// 投稿者／リポスト元。
+#[derive(Debug, Clone, Deserialize)]
+pub struct Author {
+    pub did: String,
+    pub handle: String,
+    #[serde(rename = "displayName", default)]
+    pub display_name: Option<String>,
+    #[serde(default)]
+    pub avatar: Option<String>,
+}

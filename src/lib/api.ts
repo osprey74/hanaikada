@@ -1,7 +1,13 @@
 // Tauri コマンドの薄いラッパ。UI は API を直接叩かず、必ずここを経由する（DESIGN §3.1）。
 
 import { invoke } from "@tauri-apps/api/core";
-import type { SessionInfo } from "./types";
+import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import type {
+  DbStats,
+  SessionInfo,
+  SyncStatus,
+  ThrottledEvent,
+} from "./types";
 
 /** handle と App Password でログインする。 */
 export function login(handle: string, appPassword: string): Promise<SessionInfo> {
@@ -21,4 +27,66 @@ export function currentSession(): Promise<SessionInfo | null> {
 /** getSession でセッションを検証する（401 は自動でリフレッシュ再試行）。 */
 export function validateSession(): Promise<SessionInfo> {
   return invoke<SessionInfo>("validate_session");
+}
+
+// --- 同期（Phase 2） ---
+
+/** 差分同期を開始する。 */
+export function syncNow(): Promise<void> {
+  return invoke<void>("sync_now");
+}
+
+/** 初回同期を開始する（days 省略時は既定 30 日）。 */
+export function startInitialSync(days?: number): Promise<void> {
+  return invoke<void>("start_initial_sync", { days });
+}
+
+/** 実行中の同期を中断する。 */
+export function cancelSync(): Promise<void> {
+  return invoke<void>("cancel_sync");
+}
+
+/** 現在の同期状態を取得する。 */
+export function syncStatus(): Promise<SyncStatus> {
+  return invoke<SyncStatus>("sync_status");
+}
+
+/** DB の件数統計を取得する。 */
+export function dbStats(): Promise<DbStats> {
+  return invoke<DbStats>("db_stats");
+}
+
+/** 同期進捗・完了・エラー・レート制限イベントを購読する。戻り値で解除する。 */
+export async function listenSyncEvents(handlers: {
+  onProgress?: (s: SyncStatus) => void;
+  onCompleted?: (s: SyncStatus) => void;
+  onError?: (message: string) => void;
+  onThrottled?: (e: ThrottledEvent) => void;
+}): Promise<UnlistenFn> {
+  const unlisteners: UnlistenFn[] = [];
+  if (handlers.onProgress) {
+    unlisteners.push(
+      await listen<SyncStatus>("sync:progress", (e) => handlers.onProgress!(e.payload))
+    );
+  }
+  if (handlers.onCompleted) {
+    unlisteners.push(
+      await listen<SyncStatus>("sync:completed", (e) => handlers.onCompleted!(e.payload))
+    );
+  }
+  if (handlers.onError) {
+    unlisteners.push(
+      await listen<{ message: string }>("sync:error", (e) =>
+        handlers.onError!(e.payload.message)
+      )
+    );
+  }
+  if (handlers.onThrottled) {
+    unlisteners.push(
+      await listen<ThrottledEvent>("ratelimit:throttled", (e) =>
+        handlers.onThrottled!(e.payload)
+      )
+    );
+  }
+  return () => unlisteners.forEach((u) => u());
 }

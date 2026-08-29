@@ -4,6 +4,7 @@
 //! 同期エンジン（Phase 2）とクエリ（Phase 3）が同じ接続を共有する。
 
 pub mod migrations;
+pub mod queries;
 
 use crate::error::Result;
 use rusqlite::Connection;

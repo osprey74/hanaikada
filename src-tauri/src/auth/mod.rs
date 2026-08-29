@@ -113,6 +113,11 @@ impl SessionManager {
         Ok(())
     }
 
+    /// XRPC クライアントのクローンを返す（同期エンジンが getTimeline に使う）。
+    pub fn client(&self) -> BskyClient {
+        self.client.clone()
+    }
+
     /// 現在のセッション情報（メモリ内）。未ログインなら None。
     pub fn current(&self) -> Option<SessionInfo> {
         self.current.lock().unwrap().as_ref().map(|c| SessionInfo {

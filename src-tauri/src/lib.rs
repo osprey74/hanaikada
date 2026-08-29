@@ -5,9 +5,12 @@ mod bsky;
 mod commands;
 mod db;
 mod error;
+mod sync;
 
 use auth::SessionManager;
 use db::Db;
+use std::sync::Arc;
+use sync::Syncer;
 use tauri::Manager;
 
 /// アプリデータの保存先ディレクトリ名（DESIGN §9）。
@@ -30,12 +33,11 @@ pub fn run() {
         .setup(|app| {
             let data_dir = app.path().data_dir()?.join(APP_DIR);
 
-            // SQLite（DESIGN §5）
-            let db = Db::open(&data_dir.join("hanaikada.db"))?;
-            app.manage(db);
+            // SQLite（DESIGN §5）。同期エンジンと UI クエリで共有するため Arc 化。
+            let db = Arc::new(Db::open(&data_dir.join("hanaikada.db"))?);
 
             // セッション管理。起動時に前回セッションを復元する。
-            let manager = SessionManager::new(data_dir)?;
+            let manager = Arc::new(SessionManager::new(data_dir)?);
             match manager.restore() {
                 Ok(Some(info)) => {
                     tracing::info!(handle = %info.handle, "セッションを復元しました");
@@ -43,7 +45,13 @@ pub fn run() {
                 Ok(None) => tracing::info!("保存済みセッションはありません"),
                 Err(e) => tracing::warn!("セッション復元に失敗: {e}"),
             }
+
+            // 同期エンジン。
+            let syncer = Syncer::new(db.clone(), manager.clone());
+
+            app.manage(db);
             app.manage(manager);
+            app.manage(syncer);
 
             Ok(())
         })
@@ -52,6 +60,11 @@ pub fn run() {
             commands::logout,
             commands::current_session,
             commands::validate_session,
+            commands::sync_now,
+            commands::start_initial_sync,
+            commands::cancel_sync,
+            commands::sync_status,
+            commands::db_stats,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

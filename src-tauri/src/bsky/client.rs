@@ -4,10 +4,27 @@
 //! ハンドル解決による PDS ディスカバリは v1.1（OAuth 移行）で扱う。
 
 use super::models::{
-    CreateSessionRequest, GetSessionResponse, SessionResponse, XrpcErrorBody,
+    CreateSessionRequest, GetSessionResponse, GetTimelineResponse, SessionResponse, XrpcErrorBody,
 };
 use crate::error::{AppError, Result};
-use reqwest::StatusCode;
+use reqwest::{header::HeaderMap, StatusCode};
+
+/// getTimeline レスポンスに付随するレート制限情報（自発的な間引き判断に使う）。
+/// reset / limit は Phase 3 のステータス表示で参照予定。
+#[allow(dead_code)]
+#[derive(Debug, Clone, Default)]
+pub struct RateInfo {
+    pub remaining: Option<i64>,
+    /// リセット時刻（Unix 秒）。
+    pub reset: Option<i64>,
+    pub limit: Option<i64>,
+}
+
+/// 1 ページ分のタイムライン取得結果。
+pub struct TimelinePage {
+    pub feed: super::models::GetTimelineResponse,
+    pub rate: RateInfo,
+}
 
 /// MVP の固定エントリポイント。
 const DEFAULT_SERVICE: &str = "https://bsky.social";
@@ -88,6 +105,42 @@ impl BskyClient {
         Err(self.map_error(status, resp.text().await.unwrap_or_default()))
     }
 
+    /// `app.bsky.feed.getTimeline`。accessJwt が必要。失効時は `Unauthorized`、
+    /// 429 は `RateLimited`（待機秒数つき）を返す。
+    pub async fn get_timeline(
+        &self,
+        access_jwt: &str,
+        cursor: Option<&str>,
+        limit: u32,
+    ) -> Result<TimelinePage> {
+        let limit_s = limit.to_string();
+        let mut query: Vec<(&str, &str)> = vec![("limit", &limit_s)];
+        if let Some(c) = cursor {
+            query.push(("cursor", c));
+        }
+
+        let resp = self
+            .http
+            .get(self.url("app.bsky.feed.getTimeline"))
+            .bearer_auth(access_jwt)
+            .query(&query)
+            .send()
+            .await?;
+
+        let status = resp.status();
+        if status == StatusCode::TOO_MANY_REQUESTS {
+            return Err(AppError::RateLimited {
+                retry_after_secs: retry_after(resp.headers()),
+            });
+        }
+        let rate = parse_rate_info(resp.headers());
+        if status.is_success() {
+            let feed = resp.json::<GetTimelineResponse>().await?;
+            return Ok(TimelinePage { feed, rate });
+        }
+        Err(self.map_error(status, resp.text().await.unwrap_or_default()))
+    }
+
     /// session 系レスポンスの共通パース。
     async fn parse_session(
         &self,
@@ -139,5 +192,94 @@ impl BskyClient {
                 },
             },
         }
+    }
+}
+
+/// ヘッダから 1 個の整数値を読む。
+fn header_i64(headers: &HeaderMap, name: &str) -> Option<i64> {
+    headers
+        .get(name)
+        .and_then(|v| v.to_str().ok())
+        .and_then(|s| s.trim().parse::<i64>().ok())
+}
+
+/// `RateLimit-*` ヘッダを解釈する（Bluesky は小文字ヘッダで返す）。
+fn parse_rate_info(headers: &HeaderMap) -> RateInfo {
+    RateInfo {
+        remaining: header_i64(headers, "ratelimit-remaining"),
+        reset: header_i64(headers, "ratelimit-reset"),
+        limit: header_i64(headers, "ratelimit-limit"),
+    }
+}
+
+/// 429 応答から待機秒数を推定する。`Retry-After`（秒）を優先し、
+/// 無ければ `RateLimit-Reset`（Unix 秒）から現在との差を求める。
+fn retry_after(headers: &HeaderMap) -> Option<u64> {
+    if let Some(secs) = header_i64(headers, "retry-after") {
+        if secs >= 0 {
+            return Some(secs as u64);
+        }
+    }
+    if let Some(reset) = header_i64(headers, "ratelimit-reset") {
+        let now = chrono::Utc::now().timestamp();
+        if reset > now {
+            return Some((reset - now) as u64);
+        }
+    }
+    None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
+
+    fn headers(pairs: &[(&str, &str)]) -> HeaderMap {
+        let mut h = HeaderMap::new();
+        for (k, v) in pairs {
+            let name = HeaderName::from_bytes(k.as_bytes()).unwrap();
+            h.insert(name, HeaderValue::from_str(v).unwrap());
+        }
+        h
+    }
+
+    #[test]
+    fn retry_after_prefers_retry_after_header() {
+        let h = headers(&[("retry-after", "42")]);
+        assert_eq!(retry_after(&h), Some(42));
+    }
+
+    #[test]
+    fn retry_after_falls_back_to_ratelimit_reset() {
+        // reset は Unix 秒。十分未来に置けば now との差が正の待機秒数になる。
+        let future = chrono::Utc::now().timestamp() + 120;
+        let h = headers(&[("ratelimit-reset", &future.to_string())]);
+        let secs = retry_after(&h).expect("reset から待機秒数を算出");
+        assert!(secs > 0 && secs <= 120, "待機秒数は 0〜120 の範囲: {secs}");
+    }
+
+    #[test]
+    fn retry_after_none_when_no_headers() {
+        assert_eq!(retry_after(&HeaderMap::new()), None);
+    }
+
+    #[test]
+    fn retry_after_ignores_past_reset() {
+        let past = chrono::Utc::now().timestamp() - 60;
+        let h = headers(&[("ratelimit-reset", &past.to_string())]);
+        assert_eq!(retry_after(&h), None, "過去の reset は待機に使わない");
+    }
+
+    #[test]
+    fn parse_rate_info_reads_all_fields() {
+        let h = headers(&[
+            ("ratelimit-remaining", "15"),
+            ("ratelimit-reset", "1788000000"),
+            ("ratelimit-limit", "3000"),
+        ]);
+        let r = parse_rate_info(&h);
+        assert_eq!(r.remaining, Some(15));
+        assert_eq!(r.reset, Some(1788000000));
+        assert_eq!(r.limit, Some(3000));
     }
 }

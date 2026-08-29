@@ -21,9 +21,17 @@ pub enum AppError {
     #[error("未ログインです")]
     NotLoggedIn,
 
+    /// 同期が利用者により中断された（エラーではなく正常停止として扱う）。
+    #[error("中断されました")]
+    Cancelled,
+
     /// Bluesky から想定外の XRPC エラーが返った。`error` はレスポンスの error 名。
     #[error("Bluesky API エラー: {error}")]
     Xrpc { status: u16, error: String },
+
+    /// レート制限（HTTP 429）。可能なら待機秒数を伴う。
+    #[error("レート制限中です")]
+    RateLimited { retry_after_secs: Option<u64> },
 
     #[error("ネットワークエラー: {0}")]
     Network(String),
