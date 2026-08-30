@@ -10,6 +10,16 @@ Bluesky's regular timeline is text-first and chronological, which is a low-densi
 
 ---
 
+## Screenshots
+
+![Main grid — only the media from the accounts you follow, newest-first in a dense grid](docs/images/appview.png)
+
+| Login | Settings |
+|---|---|
+| ![Login screen](docs/images/login.png) | ![Settings panel](docs/images/setting.png) |
+
+---
+
 ## Features
 
 - **Media-only grid** — Only image/video posts, newest first, in a dense virtualized masonry. Multi-image posts collapse to one tile with a count badge; videos get a play icon; reposts get a subtle marker.
