@@ -728,6 +728,107 @@ mod tests {
         assert_eq!(tiles[0].post_uri, "at://alice/2");
     }
 
+    /// 10,000 件規模のメディアを持つ一時ファイル DB を組み、参照系クエリの応答時間を測る。
+    /// 通常テストからは除外（`--ignored` で実行）。実行例:
+    ///   cargo test --release -p hanaikada bench_query_10k -- --ignored --nocapture
+    #[test]
+    #[ignore]
+    fn bench_query_10k() {
+        use std::time::Instant;
+
+        // WAL の一時ファイル DB（本番と同条件に近づける）
+        let dir = std::env::temp_dir().join("hanaikada_bench");
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("bench.db");
+        let _ = std::fs::remove_file(&path);
+        let c = Connection::open(&path).unwrap();
+        c.execute_batch(
+            "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; PRAGMA foreign_keys=ON;",
+        )
+        .unwrap();
+        migrations::migrate(&c).unwrap();
+
+        // --- 約 10,000 メディアを投入（1〜4枚・動画・リポスト・ALT/本文つきを混在） ---
+        let n_actors = 300;
+        for i in 0..n_actors {
+            upsert_actor(&c, &actor(&format!("did:a{i}"), &format!("user{i}.test")), 1).unwrap();
+        }
+        let target_media = 10_000i64;
+        let mut media = 0i64;
+        let mut p = 0i64;
+        c.execute_batch("BEGIN").unwrap();
+        while media < target_media {
+            let author = actor(&format!("did:a{}", p % n_actors), &format!("user{}.test", p % n_actors));
+            let reposter = if p % 5 == 0 {
+                Some(actor(&format!("did:a{}", (p + 7) % n_actors), &format!("user{}.test", (p + 7) % n_actors)))
+            } else {
+                None
+            };
+            // メディア構成: 60% 1枚 / 20% 4枚 / 12% 2枚 / 8% 動画
+            let items: Vec<ExtractedMedia> = match p % 25 {
+                r if r < 15 => vec![img(0, if p % 11 == 0 { Some("a cat photo by the window") } else { None })],
+                r if r < 20 => (0..4).map(|k| img(k, if k == 0 && p % 13 == 0 { Some("硝子細工のグラス") } else { None })).collect(),
+                r if r < 23 => (0..2).map(|k| img(k, None)).collect(),
+                _ => vec![video(0)],
+            };
+            let text = if p % 7 == 0 { Some("窓辺の硝子と猫の写真です") } else { None };
+            let indexed = 2_000_000_000 - p; // 新しい順に並ぶよう単調減少
+            let ep = post(&format!("at://user{}/{}", p % n_actors, p), author, reposter, indexed, text, items);
+            media += insert_post_with_media(&c, &ep, 1).unwrap() as i64;
+            p += 1;
+        }
+        c.execute_batch("COMMIT").unwrap();
+        c.execute_batch("ANALYZE").unwrap();
+
+        let total: i64 = c.query_row("SELECT count(*) FROM media", [], |r| r.get(0)).unwrap();
+        let posts: i64 = c.query_row("SELECT count(*) FROM posts", [], |r| r.get(0)).unwrap();
+        eprintln!("\n=== bench_query_10k: media={total} posts={posts} ===");
+
+        // 計測ヘルパ: 数回まわして中央値相当（最小値）を採る
+        let bench = |label: &str, f: &dyn Fn()| {
+            // ウォームアップ
+            f();
+            let mut best = f64::MAX;
+            for _ in 0..5 {
+                let t = Instant::now();
+                f();
+                best = best.min(t.elapsed().as_secs_f64() * 1000.0);
+            }
+            eprintln!("  {label:<40} {best:>7.2} ms");
+            best
+        };
+
+        let all = MediaFilter::default();
+        let kind = MediaFilter { media_type: Some("video".into()), ..Default::default() };
+        let no_rt = MediaFilter { include_reposts: Some(false), ..Default::default() };
+        let actors_f = MediaFilter { actor_dids: Some(vec!["did:a1".into(), "did:a2".into(), "did:a3".into()]), ..Default::default() };
+        let fts = MediaFilter { query: Some("cat".into()), ..Default::default() };
+        let fts_jp = MediaFilter { query: Some("硝子".into()), ..Default::default() };
+
+        let worst_first_page = [
+            bench("query_media all (page0,60)", &|| { query_media(&c, &all, 0, 60).unwrap(); }),
+            bench("query_media kind=video", &|| { query_media(&c, &kind, 0, 60).unwrap(); }),
+            bench("query_media no-reposts", &|| { query_media(&c, &no_rt, 0, 60).unwrap(); }),
+            bench("query_media actors(3)", &|| { query_media(&c, &actors_f, 0, 60).unwrap(); }),
+            bench("query_media FTS 'cat'", &|| { query_media(&c, &fts, 0, 60).unwrap(); }),
+            bench("query_media LIKE '硝子'(2字)", &|| { query_media(&c, &fts_jp, 0, 60).unwrap(); }),
+            bench("query_media deep offset(9000)", &|| { query_media(&c, &all, 9000, 60).unwrap(); }),
+        ].iter().cloned().fold(0.0_f64, f64::max);
+
+        bench("media_count all", &|| { media_count(&c, &all).unwrap(); });
+        bench("media_count no-reposts", &|| { media_count(&c, &no_rt).unwrap(); });
+        bench("list_actors", &|| { list_actors(&c).unwrap(); });
+
+        eprintln!("=== 最も遅いフィルタ適用（1ページ目取得）: {worst_first_page:.2} ms（目標 <200ms）===\n");
+        assert!(
+            worst_first_page < 200.0,
+            "フィルタ適用の 1 ページ目取得が 200ms を超過: {worst_first_page:.2} ms"
+        );
+
+        drop(c);
+        let _ = std::fs::remove_file(&path);
+    }
+
     #[test]
     fn media_count_and_list_actors() {
         let c = conn();
