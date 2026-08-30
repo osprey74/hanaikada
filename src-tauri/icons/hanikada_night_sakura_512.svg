@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+  <!-- Generator: Adobe Illustrator 30.6.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 109)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #06285f;
+      }
+
+      .st1 {
+        fill: url(#_名称未設定グラデーション_18);
+      }
+
+      .st2 {
+        stroke: #77a6ce;
+      }
+
+      .st2, .st3, .st4, .st5, .st6, .st7 {
+        stroke-linecap: round;
+      }
+
+      .st2, .st3, .st5, .st6 {
+        fill: none;
+      }
+
+      .st2, .st5, .st6 {
+        stroke-width: 3px;
+      }
+
+      .st8 {
+        fill: url(#_名称未設定グラデーション_5);
+      }
+
+      .st9 {
+        fill: #f06c9a;
+      }
+
+      .st10 {
+        fill: url(#_名称未設定グラデーション_13);
+      }
+
+      .st11 {
+        fill: url(#_名称未設定グラデーション_6);
+      }
+
+      .st12 {
+        fill: url(#_名称未設定グラデーション_2);
+      }
+
+      .st3 {
+        stroke: #dce9f4;
+        stroke-width: 6px;
+      }
+
+      .st4 {
+        stroke-miterlimit: 4;
+        stroke-width: 3px;
+      }
+
+      .st4, .st7 {
+        stroke: #e95783;
+      }
+
+      .st13 {
+        fill: url(#_名称未設定グラデーション_11);
+      }
+
+      .st14 {
+        fill: #0a3476;
+      }
+
+      .st15 {
+        fill: #dce9f4;
+      }
+
+      .st16 {
+        fill: url(#_名称未設定グラデーション_14);
+      }
+
+      .st17 {
+        fill: #f5f8fb;
+      }
+
+      .st18 {
+        fill: url(#_名称未設定グラデーション_15);
+      }
+
+      .st19 {
+        fill: url(#_名称未設定グラデーション);
+      }
+
+      .st20 {
+        fill: url(#_名称未設定グラデーション_12);
+      }
+
+      .st21 {
+        fill: url(#_名称未設定グラデーション_8);
+      }
+
+      .st22 {
+        fill: url(#_名称未設定グラデーション_4);
+      }
+
+      .st23 {
+        fill: url(#_名称未設定グラデーション_3);
+      }
+
+      .st5 {
+        stroke: #83aed4;
+      }
+
+      .st6 {
+        stroke: #8db7d9;
+      }
+
+      .st24 {
+        fill: #f7a91a;
+      }
+
+      .st25 {
+        fill: url(#_名称未設定グラデーション_10);
+      }
+
+      .st26 {
+        fill: url(#_名称未設定グラデーション_20);
+      }
+
+      .st27 {
+        fill: url(#_名称未設定グラデーション_7);
+      }
+
+      .st28 {
+        fill: url(#_名称未設定グラデーション_9);
+      }
+
+      .st29 {
+        fill: url(#_名称未設定グラデーション_21);
+      }
+
+      .st30 {
+        fill: url(#_名称未設定グラデーション_17);
+      }
+
+      .st7 {
+        stroke-width: 2.5px;
+      }
+
+      .st31 {
+        fill: #7a5a7f;
+      }
+
+      .st32 {
+        fill: url(#_名称未設定グラデーション_16);
+      }
+
+      .st33 {
+        fill: url(#_名称未設定グラデーション_19);
+      }
+    </style>
+    <linearGradient id="_名称未設定グラデーション" data-name="名称未設定グラデーション" x1="-163.65" y1="554.22" x2="-162.75" y2="553.22" gradientTransform="translate(83803.9152 283748.0938) scale(512 -512)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#082a63"/>
+      <stop offset=".55" stop-color="#06245a"/>
+      <stop offset="1" stop-color="#031a42"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_2" data-name="名称未設定グラデーション 2" x1="-159.29" y1="553.33" x2="-158.29" y2="552.33" gradientTransform="translate(5588.2097 24243.9141) scale(34.763 -43.6875)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_3" data-name="名称未設定グラデーション 3" x1="-158.91" y1="553.21" x2="-157.91" y2="552.21" gradientTransform="translate(5508.6175 21548.2479) scale(32.1799 -38.8854)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_4" data-name="名称未設定グラデーション 4" x1="-159.67" y1="553.43" x2="-158.67" y2="552.43" gradientTransform="translate(6365.3529 27113.788) scale(37.8835 -48.7443)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_5" data-name="名称未設定グラデーション 5" x1="-159.25" y1="553.34" x2="-158.25" y2="552.34" gradientTransform="translate(5925.0924 24624.8524) scale(34.4345 -44.1384)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_6" data-name="名称未設定グラデーション 6" x1="-159.5" y1="553.37" x2="-158.5" y2="552.37" gradientTransform="translate(5871.8862 25253.1279) scale(36.4287 -45.1384)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_7" data-name="名称未設定グラデーション 7" x1="-159.46" y1="553.32" x2="-158.46" y2="552.32" gradientTransform="translate(6161.1202 24170.5768) scale(36.0732 -43.1384)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_8" data-name="名称未設定グラデーション 8" x1="-158.97" y1="553.25" x2="-157.97" y2="552.25" gradientTransform="translate(5268.9435 22667.5918) scale(32.5521 -40.25)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_9" data-name="名称未設定グラデーション 9" x1="-160.43" y1="553.79" x2="-159.43" y2="552.79" gradientTransform="translate(7481.9925 46635.1482) scale(46 -84)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_10" data-name="名称未設定グラデーション 10" x1="-162.05" y1="555.98" x2="-161.05" y2="554.98" gradientTransform="translate(-46504.4541 7613.3122) rotate(90) scale(46 -84)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_11" data-name="名称未設定グラデーション 11" x1="-166.36" y1="555.82" x2="-165.36" y2="554.82" gradientTransform="translate(-7485.5852 -46425.7125) scale(-46 84)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_12" data-name="名称未設定グラデーション 12" x1="-167.41" y1="553.52" x2="-166.41" y2="552.52" gradientTransform="translate(46558.9235 -7456.7571) rotate(-90) scale(46 -84)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_13" data-name="名称未設定グラデーション 13" x1="-163.75" y1="552.27" x2="-162.75" y2="551.27" gradientTransform="translate(7603.3154 46530.5051) scale(46 -84)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_14" data-name="名称未設定グラデーション 14" x1="-161.3" y1="553.68" x2="-160.3" y2="552.68" gradientTransform="translate(9665.0346 58966.2217) scale(58 -106)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_15" data-name="名称未設定グラデーション 15" x1="-162.12" y1="555.5" x2="-161.12" y2="554.5" gradientTransform="translate(-58444.9996 9728.5242) rotate(90) scale(58 -106)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_16" data-name="名称未設定グラデーション 16" x1="-165.54" y1="555.63" x2="-164.54" y2="554.63" gradientTransform="translate(-9196.4628 -58435.6113) scale(-58 106)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_17" data-name="名称未設定グラデーション 17" x1="-166.83" y1="553.89" x2="-165.83" y2="552.89" gradientTransform="translate(58983.9604 -9231.7784) rotate(-90) scale(58 -106)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_18" data-name="名称未設定グラデーション 18" x1="-164.2" y1="552.68" x2="-163.2" y2="551.68" gradientTransform="translate(9796.356 58897.5655) scale(58 -106)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff9fb"/>
+      <stop offset=".65" stop-color="#f8dce7"/>
+      <stop offset="1" stop-color="#f4c7d9"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_19" data-name="名称未設定グラデーション 19" x1="-160.55" y1="553.59" x2="-159.55" y2="552.59" gradientTransform="translate(7862.0187 33370.9655) scale(47.5827 -59.75)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_20" data-name="名称未設定グラデーション 20" x1="-160.35" y1="553.55" x2="-159.35" y2="552.55" gradientTransform="translate(7639.0294 31833.2082) scale(44.8997 -56.8854)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+    <linearGradient id="_名称未設定グラデーション_21" data-name="名称未設定グラデーション 21" x1="-159.96" y1="553.49" x2="-158.96" y2="552.49" gradientTransform="translate(6647.8025 29120.8304) scale(40.575 -51.8854)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffd2e1"/>
+      <stop offset="1" stop-color="#f184a8"/>
+    </linearGradient>
+  </defs>
+  <g id="_レイヤー_3" data-name="レイヤー_3">
+    <rect class="st19" x="0" width="512" height="512"/>
+  </g>
+  <g id="_レイヤー_2" data-name="レイヤー_2">
+    <path class="st15" d="M0,278.16v-7.45c37.31-13.33,76.41-20.76,113.92-21.59,40.69-.9,76.54,5.93,103.67,19.76l3.72,1.9-2.52,3.33c-14.16,18.71-41.61,33.2-77.31,40.81-18.28,3.9-38.1,5.85-58.43,5.85s-39.25-1.77-58.68-5.33c-1.9-.35-3.16-2.17-2.81-4.07.35-1.9,2.17-3.15,4.07-2.81,76.84,14.06,154.95-1.13,184.87-35.35-52.39-24.56-135.05-22.51-210.5,4.96Z"/>
+    <path class="st14" d="M512,101.95c-93.42-19.18-156.97-8.45-226,3.05C167.05,124.98,95.92,83.12,0,100.7v-34.6c108.31-22.14,209.09,23.38,330-4.1,63.69-14.06,121.9-14.44,182,5.09v34.86Z"/>
+    <path class="st14" d="M512,179.41c-96.61-25.04-163.63-26.5-248-11.41C160.77,186.27,86.75,158.64,0,176.6v-32.53c83.29-18.23,152.12,14.05,245-5.07,94.02-20.21,176.46-14.94,267,12.42v27.99Z"/>
+    <path class="st0" d="M512,410.25v-30.6c-78.57-23.4-148.82-33.65-241-13.65-105.32,23.61-175.2-24.51-271-4.37v38.16c90.41-15.86,167.47,22.06,273,2.22,80.71-15.08,148.05-14.42,239,8.25Z"/>
+    <path class="st0" d="M511.96,512l.04-52.04c-63.05-20.86-136.39-34.54-220.02-14.96-100.12,23.39-194.99-18.01-291.98,3.62v63.38h511.96Z"/>
+  </g>
+  <g id="_レイヤー_1" data-name="レイヤー_1">
+    <path class="st12" d="M62,112c-17-14-14-34,8-42,16,9,22,25,8,39-5,5-11,6-16,3Z"/>
+    <path class="st23" d="M402,72c-13-15-7-31,13-36,14,9,17,24,4,35-6,5-12,5-17,1Z"/>
+    <path class="st22" d="M330,184c-21-16-17-38,8-47,19,13,22,32,6,45-5,4-10,5-14,2Z"/>
+    <path class="st8" d="M452,243c-17-15-12-34,10-42,17,13,19,30,5,41-5,4-10,4-15,1Z"/>
+    <path class="st11" d="M74,318c-20-17-15-36,9-43,18,14,20,31,5,42-5,4-10,4-14,1Z"/>
+    <path class="st27" d="M420,342c-18-16-13-34,10-41,18,13,20,30,6,40-5,4-11,4-16,1Z"/>
+    <path class="st21" d="M105,437c-17-15-13-32,8-38,16,12,19,28,5,38-4,3-9,3-13,0Z"/>
+    <ellipse class="st31" cx="92" cy="218" rx="29" ry="8"/>
+    <ellipse class="st31" cx="344" cy="282" rx="32" ry="9"/>
+    <ellipse class="st31" cx="172" cy="407" rx="34" ry="9"/>
+    <ellipse class="st31" cx="438" cy="408" rx="27" ry="7"/>
+    <path class="st15" d="M390.1,173.38c-22.73,0-46.8-2.25-70.89-6.94-1.9-.37-3.14-2.21-2.77-4.1.37-1.9,2.21-3.13,4.1-2.77,37.26,7.26,76.32,8.76,109.99,4.22,31.65-4.27,56.66-13.64,71.06-26.55-41.93-32.3-128.2-38.35-216.82-14.85-1.87.5-3.79-.62-4.28-2.49-.5-1.87.62-3.78,2.49-4.28,47.14-12.51,93.77-17.08,134.85-13.23,39.41,3.7,70.99,14.74,91.31,31.94l2.86,2.42-2.6,2.69c-21.12,21.82-66.55,33.94-119.29,33.94Z"/>
+    <path class="st6" d="M297,130c81-16,147-9,178,13-24,17-78,22-126,14"/>
+    <path class="st5" d="M17,286c71-23,130-21,167-6-23,21-75,30-123,27"/>
+    <path class="st3" d="M225,422c90-31,191-19,265,16"/>
+    <path class="st2" d="M253,436c70-22,146-14,200,9"/>
+    <ellipse class="st28" cx="125" cy="159" rx="23" ry="42"/>
+    <ellipse class="st25" cx="156" cy="182" rx="42" ry="23" transform="translate(-48.61 57.11) rotate(-18)"/>
+    <ellipse class="st13" cx="144" cy="221" rx="23" ry="42" transform="translate(-102.4 126.85) rotate(-36)"/>
+    <ellipse class="st20" cx="105" cy="221" rx="42" ry="23" transform="translate(-135.51 176.05) rotate(-54)"/>
+    <ellipse class="st10" cx="94" cy="182" rx="23" ry="42" transform="translate(-108.14 215.16) rotate(-72)"/>
+    <circle class="st9" cx="125" cy="192" r="8"/>
+    <circle class="st24" cx="125" cy="175" r="3.5"/>
+    <circle class="st24" cx="140" cy="183" r="3.5"/>
+    <circle class="st24" cx="134" cy="202" r="3.5"/>
+    <circle class="st24" cx="115" cy="202" r="3.5"/>
+    <circle class="st24" cx="110" cy="183" r="3.5"/>
+    <path class="st7" d="M125,192v-18"/>
+    <path class="st7" d="M127,193l13-10"/>
+    <path class="st7" d="M127,194l7,8"/>
+    <path class="st7" d="M123,194l-8,8"/>
+    <path class="st7" d="M123,193l-13-10"/>
+    <ellipse class="st16" cx="338.74" cy="329.44" rx="29" ry="53" transform="translate(-42.55 50.35) rotate(-8)"/>
+    <ellipse class="st18" cx="384.64" cy="354.29" rx="53" ry="29" transform="translate(-116.38 204.47) rotate(-26)"/>
+    <ellipse class="st32" cx="376.04" cy="408.01" rx="29" ry="53" transform="translate(-177.89 375.73) rotate(-44)"/>
+    <ellipse class="st30" cx="324.54" cy="415.25" rx="53" ry="29" transform="translate(-194.46 506.85) rotate(-62)"/>
+    <ellipse class="st1" cx="301.46" cy="365.98" rx="29" ry="53" transform="translate(-111.31 599.31) rotate(-80)"/>
+    <circle class="st9" cx="345" cy="374" r="10"/>
+    <circle class="st24" cx="341.94" cy="352.21" r="4"/>
+    <circle class="st24" cx="363.14" cy="359.33" r="4"/>
+    <circle class="st24" cx="359.82" cy="386.05" r="4"/>
+    <circle class="st24" cx="334.07" cy="389.67" r="4"/>
+    <circle class="st24" cx="323.52" cy="364.9" r="4"/>
+    <path class="st4" d="M345,374l-3.2-22.78"/>
+    <path class="st4" d="M348.25,375.56l14.89-16.23"/>
+    <path class="st4" d="M348.39,376.55l11.43,9.5"/>
+    <path class="st4" d="M342.45,377.39l-8.37,12.28"/>
+    <path class="st4" d="M342.31,376.4l-18.78-11.5"/>
+    <path class="st33" d="M238,350c-25-20-19-46,12-56,24,17,27,42,6,56-7,5-12,5-18,0Z"/>
+    <path class="st26" d="M454,397c-24-19-17-44,12-53,22,17,25,41,5,54-6,4-12,4-17-1Z"/>
+    <path class="st29" d="M171,451c-22-18-16-40,10-48,20,16,23,37,6,49-6,4-11,4-16-1Z"/>
+    <ellipse class="st17" cx="377" cy="96" rx="17" ry="4"/>
+    <ellipse class="st17" cx="191" cy="337" rx="14" ry="4"/>
+    <ellipse class="st17" cx="68" cy="388" rx="12" ry="3"/>
+  </g>
+</svg>
