@@ -314,6 +314,22 @@
 .sync-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* キャッシュ使用量バー */
+.cache-bar {
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--border);
+  overflow: hidden;
+}
+.cache-bar-fill {
+  height: 100%;
+  background: var(--text-3);
+  border-radius: var(--r-pill);
+  transition: width 160ms ease-out;
 }
 
 /* ===================================================================== */

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { logout, validateSession } from "../../lib/api";
 import type { SessionInfo } from "../../lib/types";
 import { SyncPanel } from "./SyncPanel";
+import { CachePanel } from "./CachePanel";
 
 interface Props {
   session: SessionInfo;
@@ -57,10 +58,7 @@ export function AccountPanel({ session, onSessionChange, onLoggedOut }: Props) {
 
   return (
     <div className="home">
-      <div className="home-title">ログイン済みです</div>
-      <div className="home-body">
-        認証基盤と同期エンジンが動作しています。グリッド表示は後続フェーズで実装します。
-      </div>
+      <div className="home-title">アカウント</div>
 
       <div className="card">
         <div className="avatar">{initial}</div>
@@ -100,6 +98,7 @@ export function AccountPanel({ session, onSessionChange, onLoggedOut }: Props) {
       </div>
 
       <SyncPanel />
+      <CachePanel />
     </div>
   );
 }

@@ -180,6 +180,44 @@ fn parse_prefs(value: &serde_json::Value) -> ModerationPrefs {
     }
 }
 
+// --- キャッシュ管理（Phase 5） ---
+
+/// キャッシュ使用量（バイト）。設定画面の使用量バー用。
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CacheUsage {
+    pub thumbs_bytes: u64,
+    pub fullsize_bytes: u64,
+    pub total_bytes: u64,
+    pub limit_bytes: u64,
+}
+
+#[tauri::command]
+pub async fn cache_usage(cache: State<'_, crate::media::MediaCache>) -> Result<CacheUsage> {
+    let (thumbs, full) = cache.scan_usage();
+    Ok(CacheUsage {
+        thumbs_bytes: thumbs,
+        fullsize_bytes: full,
+        total_bytes: thumbs + full,
+        limit_bytes: cache.limit(),
+    })
+}
+
+/// ディスクキャッシュを全削除する（メタは保持し、再取得可能）。
+#[tauri::command]
+pub async fn clear_cache(app: AppHandle) -> Result<()> {
+    crate::media::clear_all(&app)
+}
+
+/// ミュート/ブロックを取得し is_hidden を更新する（手動トリガ）。隠した投稿数を返す。
+#[tauri::command]
+pub async fn reconcile_hidden(
+    db: State<'_, Arc<Db>>,
+    manager: State<'_, Arc<SessionManager>>,
+) -> Result<usize> {
+    crate::moderation::reconcile(&db, &manager).await
+}
+
 /// 起動時に呼ぶ。getPreferences からアダルト設定・ラベル可視性を取得する。
 /// 401 は一度だけリフレッシュして再試行する。
 #[tauri::command]

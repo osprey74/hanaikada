@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import type {
   ActorSummary,
+  CacheUsage,
   DbStats,
   MediaFilter,
   MediaTile,
@@ -92,6 +93,23 @@ export function getPostMedia(postUri: string): Promise<PostMediaItem[]> {
 /** モデレーション設定（アダルト設定・ラベル可視性）を取得する。 */
 export function getModerationPrefs(): Promise<ModerationPrefs> {
   return invoke<ModerationPrefs>("get_moderation_prefs");
+}
+
+// --- キャッシュ / モデレーション（Phase 5） ---
+
+/** ディスクキャッシュの使用量を取得する。 */
+export function cacheUsage(): Promise<CacheUsage> {
+  return invoke<CacheUsage>("cache_usage");
+}
+
+/** ディスクキャッシュを全削除する（メタは保持）。 */
+export function clearCache(): Promise<void> {
+  return invoke<void>("clear_cache");
+}
+
+/** ミュート/ブロックを取得し is_hidden を更新する。隠した投稿数を返す。 */
+export function reconcileHidden(): Promise<number> {
+  return invoke<number>("reconcile_hidden");
 }
 
 /** 同期進捗・完了・エラー・レート制限イベントを購読する。戻り値で解除する。 */

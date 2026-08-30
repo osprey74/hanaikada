@@ -32,6 +32,14 @@ export interface ThrottledEvent {
   until: number;
 }
 
+/** キャッシュ使用量（バイト）。 */
+export interface CacheUsage {
+  thumbsBytes: number;
+  fullsizeBytes: number;
+  totalBytes: number;
+  limitBytes: number;
+}
+
 // --- グリッド / フィルタ（Phase 3） ---
 
 export type MediaType = "all" | "image" | "video";

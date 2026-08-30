@@ -1,4 +1,4 @@
-import type { SyncStatus } from "../lib/types";
+import type { CacheUsage, SyncStatus } from "../lib/types";
 import { relativeTime } from "../lib/format";
 
 interface Props {
@@ -6,6 +6,12 @@ interface Props {
   throttleSeconds: number | null;
   totalMedia: number;
   shownCount: number;
+  offline: boolean;
+  cache: CacheUsage | null;
+}
+
+function gb(n: number): string {
+  return `${(n / 1024 ** 3).toFixed(2)} GB`;
 }
 
 /** フッターのステータスバー（handoff 2a）。同期状態・件数・キャッシュ使用量。 */
@@ -14,13 +20,20 @@ export function StatusBar({
   throttleSeconds,
   totalMedia,
   shownCount,
+  offline,
+  cache,
 }: Props) {
   const running = syncStatus?.running ?? false;
 
   return (
     <footer className="statusbar tabnum">
       <span className="status-seg">
-        {throttleSeconds != null ? (
+        {offline ? (
+          <>
+            <span className="material-symbols-rounded warn-ico">cloud_off</span>
+            オフライン — キャッシュのみ表示中
+          </>
+        ) : throttleSeconds != null ? (
           <>
             <span className="material-symbols-rounded warn-ico">schedule</span>
             レート制限中 — 約 {throttleSeconds} 秒待機
@@ -51,7 +64,10 @@ export function StatusBar({
         {totalMedia.toLocaleString()} 件中 {shownCount.toLocaleString()} 件を表示
       </span>
 
-      <span className="status-seg status-right">キャッシュ 上限 2.00 GB</span>
+      <span className="status-seg status-right">
+        キャッシュ{" "}
+        {cache ? `${gb(cache.totalBytes)} / ${gb(cache.limitBytes)}` : "上限 2.00 GB"}
+      </span>
     </footer>
   );
 }

@@ -7,6 +7,7 @@ import type {
   SyncStatus,
 } from "../lib/types";
 import {
+  cacheUsage,
   getModerationPrefs,
   listActors,
   listenSyncEvents,
@@ -15,6 +16,7 @@ import {
   syncNow,
   syncStatus as fetchSyncStatus,
 } from "../lib/api";
+import type { CacheUsage } from "../lib/types";
 import {
   DEFAULT_FILTERS,
   hasActiveFilters,
@@ -50,6 +52,8 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
   const [prefs, setPrefs] = useState<ModerationPrefs | null>(null);
   const [revealedIds, setRevealedIds] = useState<Set<number>>(new Set());
   const [viewer, setViewer] = useState<MediaTile | null>(null);
+  const [offline, setOffline] = useState(false);
+  const [cache, setCache] = useState<CacheUsage | null>(null);
   const searchRef = useRef<HTMLInputElement | null>(null);
 
   const updateUi = useCallback((next: UiFilters) => {
@@ -74,6 +78,7 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
   const refreshMeta = useCallback(() => {
     void listActors().then(setActors);
     void mediaCount({}).then(setTotalMedia);
+    void cacheUsage().then(setCache).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -102,15 +107,23 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
       onProgress: (s) => {
         setSyncStatus(s);
         setThrottle(null);
+        setOffline(false);
       },
       onCompleted: (s) => {
         setSyncStatus(s);
         setThrottle(null);
+        setOffline(false);
         setSyncTick((t) => t + 1);
         refreshMeta();
       },
       onThrottled: (e) => setThrottle(e.seconds),
-      onError: () => setThrottle(null),
+      // ネットワーク起因の同期失敗はオフライン表示にする（キャッシュ表示は継続）。
+      onError: (message) => {
+        setThrottle(null);
+        if (message.includes("ネットワーク") || message.includes("オフライン")) {
+          setOffline(true);
+        }
+      },
     }).then((u) => (unlisten = u));
     return () => unlisten?.();
   }, [refreshMeta]);
@@ -221,6 +234,8 @@ export function GridApp({ session, onSessionChange, onLoggedOut }: Props) {
         throttleSeconds={throttle}
         totalMedia={totalMedia}
         shownCount={shownCount}
+        offline={offline}
+        cache={cache}
       />
 
       {viewer && (

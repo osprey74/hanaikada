@@ -163,6 +163,58 @@ impl BskyClient {
         Err(self.map_error(status, resp.text().await.unwrap_or_default()))
     }
 
+    /// グラフ系（getMutes / getBlocks）を cursor 追従で全取得し、DID 配列を返す。
+    /// `method` は XRPC メソッド名、`field` は配列フィールド名（"mutes" / "blocks"）。
+    pub async fn list_graph_dids(
+        &self,
+        access_jwt: &str,
+        method: &str,
+        field: &str,
+    ) -> Result<Vec<String>> {
+        let mut out: Vec<String> = Vec::new();
+        let mut cursor: Option<String> = None;
+        loop {
+            let mut query: Vec<(&str, &str)> = vec![("limit", "100")];
+            if let Some(c) = cursor.as_deref() {
+                query.push(("cursor", c));
+            }
+            let resp = self
+                .http
+                .get(self.url(method))
+                .bearer_auth(access_jwt)
+                .query(&query)
+                .send()
+                .await?;
+            let status = resp.status();
+            if status == StatusCode::TOO_MANY_REQUESTS {
+                return Err(AppError::RateLimited {
+                    retry_after_secs: retry_after(resp.headers()),
+                });
+            }
+            if !status.is_success() {
+                return Err(self.map_error(status, resp.text().await.unwrap_or_default()));
+            }
+            let v: serde_json::Value = resp.json().await?;
+            if let Some(arr) = v.get(field).and_then(|x| x.as_array()) {
+                for a in arr {
+                    if let Some(did) = a.get("did").and_then(|x| x.as_str()) {
+                        out.push(did.to_string());
+                    }
+                }
+            }
+            cursor = v
+                .get("cursor")
+                .and_then(|x| x.as_str())
+                .filter(|s| !s.is_empty())
+                .map(String::from);
+            // 終端、または暴走防止の上限
+            if cursor.is_none() || out.len() > 50_000 {
+                break;
+            }
+        }
+        Ok(out)
+    }
+
     /// session 系レスポンスの共通パース。
     async fn parse_session(
         &self,

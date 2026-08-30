@@ -343,6 +343,45 @@ pub fn thumb_url_of(conn: &Connection, media_id: i64) -> Result<Option<String>> 
         .optional()?)
 }
 
+/// fullsize をディスクキャッシュしたことを media 行に記録する（LRU 用・DESIGN §9）。
+pub fn mark_fullsize_cached(
+    conn: &Connection,
+    media_id: i64,
+    local_path: &str,
+    bytes: i64,
+    now: i64,
+) -> Result<()> {
+    conn.execute(
+        "UPDATE media SET local_path = ?2, bytes = ?3, last_used_at = ?4 WHERE id = ?1",
+        params![media_id, local_path, bytes, now],
+    )?;
+    Ok(())
+}
+
+/// fullsize キャッシュへの最終アクセス時刻を更新する（LRU の touch）。
+pub fn touch_media_used(conn: &Connection, media_id: i64, now: i64) -> Result<()> {
+    conn.execute(
+        "UPDATE media SET last_used_at = ?2 WHERE id = ?1",
+        params![media_id, now],
+    )?;
+    Ok(())
+}
+
+/// LRU で削除した fullsize の記録を消す（local_path/bytes を NULL に戻す。メタは保持）。
+pub fn clear_fullsize_cache(conn: &Connection, media_id: i64) -> Result<()> {
+    conn.execute(
+        "UPDATE media SET local_path = NULL, bytes = NULL WHERE id = ?1",
+        params![media_id],
+    )?;
+    Ok(())
+}
+
+/// 全 fullsize キャッシュ記録をクリアする（「キャッシュを削除」時。メタは保持）。
+pub fn clear_all_fullsize_cache(conn: &Connection) -> Result<()> {
+    conn.execute_batch("UPDATE media SET local_path = NULL, bytes = NULL WHERE local_path IS NOT NULL")?;
+    Ok(())
+}
+
 /// メディアの fullsize URL を引く（fullsize 配信プロトコルの解決用）。動画等は None。
 pub fn fullsize_url_of(conn: &Connection, media_id: i64) -> Result<Option<String>> {
     Ok(conn
@@ -396,6 +435,34 @@ pub fn get_post_media(conn: &Connection, post_uri: &str) -> Result<Vec<PostMedia
     Ok(out)
 }
 
+// --- モデレーション（ミュート/ブロック突き合わせ・DESIGN §8） ---
+
+/// 指定 DID 群を著者またはリポスト元に持つ投稿へ is_hidden=1 を立てる。
+/// さらに、もはや対象でない投稿の is_hidden を 0 に戻す（unmute/unblock 追従）。
+/// 戻り値は新たに隠した件数。
+pub fn apply_hidden_dids(conn: &Connection, dids: &[String]) -> Result<usize> {
+    // 一旦すべて可視へ戻し、対象 DID 分だけ隠す（差分同期のたびに冪等）。
+    conn.execute_batch("UPDATE posts SET is_hidden = 0 WHERE is_hidden = 1")?;
+    if dids.is_empty() {
+        return Ok(0);
+    }
+    let placeholders = vec!["?"; dids.len()].join(", ");
+    let sql = format!(
+        "UPDATE posts SET is_hidden = 1
+         WHERE author_did IN ({placeholders}) OR reposter_did IN ({placeholders})"
+    );
+    // author 用と reposter 用に DID を 2 回渡す。
+    let mut binds: Vec<Value> = Vec::with_capacity(dids.len() * 2);
+    for d in dids {
+        binds.push(Value::Text(d.clone()));
+    }
+    for d in dids {
+        binds.push(Value::Text(d.clone()));
+    }
+    let n = conn.execute(&sql, params_from_iter(binds))?;
+    Ok(n)
+}
+
 // --- sync_state（バックフィル cursor・遡り基準） ---
 //
 // `cursor` は初回（バックフィル）同期の遡り位置を保持する。差分同期は先頭から
@@ -447,6 +514,18 @@ pub fn get_sync_cursor(conn: &Connection, key: &str) -> Result<Option<String>> {
             "SELECT cursor FROM sync_state WHERE key = ?1",
             params![key],
             |r| r.get::<_, Option<String>>(0),
+        )
+        .optional()?
+        .flatten())
+}
+
+/// sync_state の last_run_at（週次ジョブの前回実行時刻の判定などに使う）。
+pub fn get_last_run_at(conn: &Connection, key: &str) -> Result<Option<i64>> {
+    Ok(conn
+        .query_row(
+            "SELECT last_run_at FROM sync_state WHERE key = ?1",
+            params![key],
+            |r| r.get::<_, Option<i64>>(0),
         )
         .optional()?
         .flatten())
@@ -827,6 +906,66 @@ mod tests {
 
         drop(c);
         let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn apply_hidden_dids_hides_by_author_and_reposter() {
+        let c = conn();
+        seed(&c); // alice/1, bob/1, alice/2(carol リポスト)
+        let all = MediaFilter::default();
+        assert_eq!(media_count(&c, &all).unwrap(), 3);
+
+        // 著者 bob を隠す → bob/1 が除外
+        let hidden = apply_hidden_dids(&c, &["did:bob".to_string()]).unwrap();
+        assert_eq!(hidden, 1);
+        assert_eq!(media_count(&c, &all).unwrap(), 2);
+        assert!(query_media(&c, &all, 0, 100)
+            .unwrap()
+            .iter()
+            .all(|t| t.post_uri != "at://bob/1"));
+
+        // リポスト元 carol を隠す → alice/2（carol リポスト）が除外、bob/1 は復帰
+        let hidden = apply_hidden_dids(&c, &["did:carol".to_string()]).unwrap();
+        assert_eq!(hidden, 1);
+        let uris: Vec<_> = query_media(&c, &all, 0, 100)
+            .unwrap()
+            .into_iter()
+            .map(|t| t.post_uri)
+            .collect();
+        assert!(uris.contains(&"at://bob/1".to_string()), "carol 指定で bob は復帰");
+        assert!(!uris.contains(&"at://alice/2".to_string()), "reposter 一致で隠す");
+
+        // 空指定 → 全件可視に戻る
+        apply_hidden_dids(&c, &[]).unwrap();
+        assert_eq!(media_count(&c, &all).unwrap(), 3);
+    }
+
+    #[test]
+    fn mark_and_clear_fullsize_cache() {
+        let c = conn();
+        seed(&c);
+        // 代表メディア id を 1 件取得
+        let id: i64 = c
+            .query_row("SELECT id FROM media LIMIT 1", [], |r| r.get(0))
+            .unwrap();
+
+        mark_fullsize_cached(&c, id, "/cache/fullsize/1", 12345, 1000).unwrap();
+        let (path, bytes): (Option<String>, Option<i64>) = c
+            .query_row("SELECT local_path, bytes FROM media WHERE id=?1", params![id], |r| {
+                Ok((r.get(0)?, r.get(1)?))
+            })
+            .unwrap();
+        assert_eq!(path.as_deref(), Some("/cache/fullsize/1"));
+        assert_eq!(bytes, Some(12345));
+
+        clear_fullsize_cache(&c, id).unwrap();
+        let (path, bytes): (Option<String>, Option<i64>) = c
+            .query_row("SELECT local_path, bytes FROM media WHERE id=?1", params![id], |r| {
+                Ok((r.get(0)?, r.get(1)?))
+            })
+            .unwrap();
+        assert_eq!(path, None, "LRU 削除で local_path は NULL に戻る");
+        assert_eq!(bytes, None);
     }
 
     #[test]

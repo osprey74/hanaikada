@@ -6,6 +6,7 @@ mod commands;
 mod db;
 mod error;
 mod media;
+mod moderation;
 mod sync;
 
 use auth::SessionManager;
@@ -60,6 +61,19 @@ pub fn run() {
             app.manage(syncer);
             app.manage(media_cache);
 
+            // 起動時にキャッシュ使用量を集計し、上限超過ならエビクションする。
+            let handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                media::init_and_enforce(&handle);
+            });
+
+            // 週次のミュート/ブロック突き合わせ（前回から 7 日以上経過時）。
+            let db_w = app.state::<Arc<Db>>().inner().clone();
+            let mgr_w = app.state::<Arc<SessionManager>>().inner().clone();
+            tauri::async_runtime::spawn(async move {
+                moderation::maybe_reconcile_weekly(db_w, mgr_w).await;
+            });
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -77,6 +91,9 @@ pub fn run() {
             commands::list_actors,
             commands::get_post_media,
             commands::get_moderation_prefs,
+            commands::cache_usage,
+            commands::clear_cache,
+            commands::reconcile_hidden,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
