@@ -158,10 +158,17 @@ hanaikada/
 
 **受け入れ条件**
 
-- [ ] 上限超過時に古いファイルから削除され、DB の `local_path` が NULL に戻る
-- [ ] キャッシュ削除後もメタデータは残り、再取得できる
-- [ ] オフライン時にキャッシュ済みメディアが閲覧できる
-- [ ] 両 OS でビルドが通り、インストーラから起動できる
+- [x] 上限超過時に古いファイルから削除され、DB の `local_path` が NULL に戻る（`media::enforce_limit` が mtime 昇順で削除、fullsize 削除時に `clear_fullsize_cache` で local_path/bytes を NULL 化。単体テスト `mark_and_clear_fullsize_cache`）
+- [x] キャッシュ削除後もメタデータは残り、再取得できる（`clear_cache` はファイルのみ削除し media 行は保持。thumb/full プロトコルが次回アクセスで CDN から再取得）
+- [x] オフライン時にキャッシュ済みメディアが閲覧できる（グリッドは SQLite から描画、サムネはディスクキャッシュから配信。ネットワーク起因の同期失敗時はステータスバーに「オフライン — キャッシュのみ表示中」）
+- [x] 両 OS でビルドが通り、インストーラから起動できる（**Windows: 2026-08-30 実機で `tauri build` 成功。MSI `Hanaikada_0.1.0_x64_en-US.msi`・NSIS `Hanaikada_0.1.0_x64-setup.exe` を生成、release exe の起動をスモークテストで確認**。macOS: 実機ビルドは要 Mac のため未実施 → 総司様の macOS 環境で確認予定）
+
+**Phase 5 の補足（実装・確認済み / 残タスク）**
+
+- コード署名は今回は**署名なし**。自己署名証明書は配布時の信頼確立にならない（SmartScreen/AV は「不明な発行元」のまま）ため、公開配布時に信頼された CA の OV/EV コード署名証明書を別途取得する（→ `learnings.md` L5）。
+- 定期ポーリング（DESIGN §6.2 の 5 分間隔・非アクティブ時 3 倍）は未実装（手動 `r` / 同期ボタンのみ）。必要なら別途対応。
+- アプリアイコンは暫定（開発初期に caelum から流用）。公開前に花筏の意匠へ差し替える。
+- macOS の WKWebView ネイティブ HLS 経路は、macOS ビルド時に実機確認する（`learnings.md` L2）。
 
 ---
 

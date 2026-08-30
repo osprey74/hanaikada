@@ -163,3 +163,23 @@ Phase 2 の同期エンジンで初回同期（既定 30 日設定）を実行�
 - まとめタイルのクリックはライトボックスを 1 枚目から開き、`←`/`→` で同一投稿内を送る（design_handoff §2b と整合）。
 
 **確実性: 中**（UI 確定仕様に基づく決定。実利用での最終評価は Phase 3 の実機確認で行う）
+
+---
+
+## L5. コード署名と配布（Phase 5・HANDOFF §5 ビルド/署名）
+
+**結論**: MVP の配布物は**署名なし**とする。**自己署名証明書は配布の信頼確立に使えない**。公開配布の段階で、信頼された CA（DigiCert / Sectigo 等）の **OV または EV コード署名証明書**を取得して署名する。
+
+**根拠**
+- 自己署名 .pfx で署名しても、Windows SmartScreen は「不明な発行元」と警告し続け、他 PC では信頼されない（各 PC にその証明書を「信頼されたルート」として手動登録しない限り）。AV 誤検知や SmartScreen 回避という目的を果たせない。
+- 信頼を確立できるのは、公開 CA が発行した OV/EV コード署名証明書のみ（有償）。EV はハードウェアトークン必須だが SmartScreen 評価が即時に近い。OV は安価だが評価の蓄積に時間がかかる。
+- macOS 配布では Apple Developer Program による署名 + notarization が別途必要。
+
+**実務メモ**
+- 開発中の AV 誤検知（`Drop.Win64.ScoreExeDrop`）は、署名なしの新規ビルド exe に対するヒューリスティック反応。2026-08-29 のセッションで cargo.exe / rustc.exe / MSVC link.exe まで巻き込まれツールチェーンが破損した（rustup 再インストール＋VS 修復で復旧）。**AV は現在アンインストール済み**（総司様の開発機、2026-08-30 時点）で、開発中は考慮不要。
+- Tauri の署名設定: Windows は `tauri.conf.json` の `bundle.windows.certificateThumbprint` / `signCommand`、macOS は `bundle.macOS.signingIdentity` + notarization。証明書入手後に設定する。
+
+**Windows ビルド実績（2026-08-30・署名なし）**
+- `npm run tauri build` 成功（release 1m06s）。生成物: `hanaikada.exe`（16MB）、MSI 6.1MB、NSIS 4.3MB。release exe の起動をスモークテストで確認。
+
+**確実性: 高**（署名の信頼モデルは確立した事実。Windows ビルドは実機確認済み）。
