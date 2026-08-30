@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  # ── 1. テスト（Windows ランナーで cargo test） ──────────────────
+  test:
+    name: Unit Tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: cargo test
+        run: cargo test --manifest-path src-tauri/Cargo.toml
+
+  # ── 2. ビルド & リリース（Windows x86_64 + macOS universal） ────
+  build:
+    name: Build (${{ matrix.os }})
+    needs: test
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: ''
+          - os: macos-latest
+            args: '--target universal-apple-darwin'
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.os == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build and publish release (draft)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: '花筏 (Hanaikada) __VERSION__'
+          releaseBody: |
+            Windows および macOS 向けのバイナリです。閲覧専用の Bluesky メディアグリッドビューアです。
+            詳細は [RELEASE_NOTES_v__VERSION__.md](https://github.com/${{ github.repository }}/blob/main/RELEASE_NOTES_v__VERSION__.md) を参照してください。
+
+            ---
+
+            Binaries for Windows and macOS. A read-only Bluesky media grid viewer.
+            See [RELEASE_NOTES_v__VERSION__.md](https://github.com/${{ github.repository }}/blob/main/RELEASE_NOTES_v__VERSION__.md) for details.
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
